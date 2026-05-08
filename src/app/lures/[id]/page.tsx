@@ -8,16 +8,19 @@ import { getLureById, getLureImages, getRelatedLures } from "@/lib/data";
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const lure = await getLureById(params.id);
   if (!lure) return {};
+  const bachiTypeLabel = lure.bachi_types.length
+    ? lure.bachi_types.map((type) => BACHI_TYPE_LABEL[type] ?? type).join("・")
+    : "未設定";
   return {
     title: `${lure.name}（${lure.maker}）| バチ抜けルアー図鑑`,
-    description: `${lure.name}のバチ抜けインプレ。レンジ${lure.range_min_cm ?? "-"}?${lure.range_max_cm ?? "-"}cm、${BACHI_TYPE_LABEL[lure.bachi_type]}対応。管理人おすすめ度★${lure.rating ?? "-"}。`
+    description: `${lure.name}のバチ抜けインプレ。レンジ${lure.range_min_cm ?? "-"}?${lure.range_max_cm ?? "-"}cm、${bachiTypeLabel}対応。管理人おすすめ度★${lure.rating ?? "-"}。`
   };
 }
 
 export default async function LureDetailPage({ params }: { params: { id: string } }) {
   const lure = await getLureById(params.id);
   if (!lure) notFound();
-  const [images, related] = await Promise.all([getLureImages(lure.id), getRelatedLures(lure.id, lure.bachi_type)]);
+  const [images, related] = await Promise.all([getLureImages(lure.id), getRelatedLures(lure.id, lure.bachi_types)]);
 
   const min = lure.range_min_cm ?? 0;
   const max = lure.range_max_cm ?? 0;
@@ -32,8 +35,14 @@ export default async function LureDetailPage({ params }: { params: { id: string 
           <LureGallery images={images} />
         </div>
         <div className="lure-card space-y-4 rounded p-6 lg:col-span-2">
-          <p className="flex gap-2 text-xs">
-            <span className="badge-bachi rounded px-2 py-1">{BACHI_TYPE_LABEL[lure.bachi_type]}</span>
+          <p className="flex flex-wrap gap-2 text-xs">
+            {lure.bachi_types.length ? (
+              lure.bachi_types.map((type) => (
+                <span key={type} className="badge-bachi rounded px-2 py-1">{BACHI_TYPE_LABEL[type] ?? type}</span>
+              ))
+            ) : (
+              <span className="badge-bachi rounded px-2 py-1">未設定</span>
+            )}
             <span className="badge-type rounded px-2 py-1">{LURE_TYPE_LABEL[lure.lure_type]}</span>
           </p>
           <h1 className="serif-title text-[28px] font-bold">{lure.name}</h1>

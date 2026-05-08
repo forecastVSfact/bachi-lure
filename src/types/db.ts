@@ -1,7 +1,7 @@
 ﻿export type LureType = "floating" | "sinking";
 export type BachiType = "river" | "harbor_drift" | "harbor_wave" | "kurukuru" | "bottom";
 
-export type Lure = {
+export type LureBase = {
   id: string;
   name: string;
   maker: string;
@@ -18,7 +18,6 @@ export type Lure = {
   swim_posture: string;
   speed_range: string;
   casting_distance: string;
-  bachi_type: BachiType;
   youtube_url: string | null;
   amazon_url: string | null;
   rakuten_url: string | null;
@@ -26,6 +25,10 @@ export type Lure = {
   comment: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type Lure = LureBase & {
+  bachi_types: BachiType[];
 };
 
 export type LureImage = {

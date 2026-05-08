@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { BACHI_TYPES } from "@/lib/constants";
 
 export async function loginAdmin(_: { error?: string } | undefined, formData: FormData) {
   const email = String(formData.get("email") ?? "");
@@ -25,6 +26,10 @@ export async function upsertLure(formData: FormData) {
   const supabase = createSupabaseAdminClient();
   const payload = Object.fromEntries(formData.entries()) as Record<string, string>;
   const id = payload.id || undefined;
+  const selectedBachiTypes = formData
+    .getAll("bachi_types")
+    .map((value) => String(value))
+    .filter((value): value is (typeof BACHI_TYPES)[number] => BACHI_TYPES.includes(value as (typeof BACHI_TYPES)[number]));
 
   const { data: lure } = await supabase
     .from("lures")
@@ -36,7 +41,6 @@ export async function upsertLure(formData: FormData) {
       swim_posture: payload.swim_posture,
       speed_range: payload.speed_range,
       casting_distance: payload.casting_distance,
-      bachi_type: payload.bachi_type,
       size_mm: payload.size_mm ? Number(payload.size_mm) : null,
       weight_g: payload.weight_g ? Number(payload.weight_g) : null,
       price_yen: payload.price_yen ? Number(payload.price_yen) : null,
@@ -56,6 +60,16 @@ export async function upsertLure(formData: FormData) {
     .single();
 
   if (lure?.id) {
+    await supabase.from("lure_bachi_types").delete().eq("lure_id", lure.id);
+    if (selectedBachiTypes.length) {
+      await supabase.from("lure_bachi_types").insert(
+        selectedBachiTypes.map((bachiType) => ({
+          lure_id: lure.id,
+          bachi_type: bachiType
+        }))
+      );
+    }
+
     const externalUrls = (payload.image_urls || "").split("\n").map((x) => x.trim()).filter(Boolean);
     const storagePaths = (payload.storage_paths || "").split("\n").map((x) => x.trim()).filter(Boolean);
 

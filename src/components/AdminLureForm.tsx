@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { BACHI_TYPE_LABEL, BACHI_TYPES } from "@/lib/constants";
 
 export function AdminLureForm({ action }: { action: (formData: FormData) => void }) {
   const [lureType, setLureType] = useState("floating");
@@ -26,7 +27,17 @@ export function AdminLureForm({ action }: { action: (formData: FormData) => void
       <input name="swim_posture" required placeholder="swim_posture" className="field-dark p-2" />
       <input name="speed_range" required placeholder="speed_range" className="field-dark p-2" />
       <input name="casting_distance" required placeholder="casting_distance" className="field-dark p-2" />
-      <input name="bachi_type" required placeholder="bachi_type" className="field-dark p-2" />
+      <div className="field-dark p-3 md:col-span-3">
+        <p className="mb-2 text-xs text-[var(--muted)]">バチ種別（複数選択可）</p>
+        <div className="flex flex-wrap gap-3">
+          {BACHI_TYPES.map((type) => (
+            <label key={type} className="flex items-center gap-1 text-sm">
+              <input type="checkbox" name="bachi_types" value={type} />
+              <span>{BACHI_TYPE_LABEL[type]}</span>
+            </label>
+          ))}
+        </div>
+      </div>
       <input name="youtube_url" placeholder="youtube_url" className="field-dark p-2" />
       <input name="amazon_url" placeholder="amazon_url" className="field-dark p-2" />
       <input name="rakuten_url" placeholder="rakuten_url" className="field-dark p-2" />

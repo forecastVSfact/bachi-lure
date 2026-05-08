@@ -18,7 +18,6 @@ create table if not exists lures (
   swim_posture text not null,
   speed_range text not null,
   casting_distance text not null,
-  bachi_type text not null,
   youtube_url text,
   amazon_url text,
   rakuten_url text,
@@ -37,6 +36,12 @@ create table if not exists lure_images (
   created_at timestamptz default now()
 );
 
+create table if not exists lure_bachi_types (
+  lure_id uuid references lures(id) on delete cascade,
+  bachi_type text not null,
+  primary key (lure_id, bachi_type)
+);
+
 create table if not exists columns (
   id uuid primary key default gen_random_uuid(),
   title text not null,
@@ -49,10 +54,12 @@ create table if not exists columns (
 
 alter table lures enable row level security;
 alter table lure_images enable row level security;
+alter table lure_bachi_types enable row level security;
 alter table columns enable row level security;
 
 create policy "Public read lures" on lures for select using (true);
 create policy "Public read lure_images" on lure_images for select using (true);
+create policy "Public read lure_bachi_types" on lure_bachi_types for select using (true);
 create policy "Public read columns" on columns for select using (true);
 
 create policy "Admin write lures" on lures
@@ -61,6 +68,11 @@ using (auth.role() = 'authenticated')
 with check (auth.role() = 'authenticated');
 
 create policy "Admin write lure_images" on lure_images
+for all
+using (auth.role() = 'authenticated')
+with check (auth.role() = 'authenticated');
+
+create policy "Admin write lure_bachi_types" on lure_bachi_types
 for all
 using (auth.role() = 'authenticated')
 with check (auth.role() = 'authenticated');

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { BACHI_TYPE_LABEL, CASTING_DISTANCE_LABEL, LURE_TYPE_LABEL, SPEED_RANGE_LABEL } from "@/lib/constants";
+import { BACHI_TYPES, BACHI_TYPE_LABEL, CASTING_DISTANCE_LABEL, LURE_TYPE_LABEL, SPEED_RANGE_LABEL } from "@/lib/constants";
 
 export function LureFilters() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export function LureFilters() {
   return (
     <div className="mb-8 space-y-3">
       <div className="flex flex-wrap gap-1.5">
-        {["all", "river", "harbor_drift", "harbor_wave", "kurukuru", "bottom"].map((b) => (
+        {["all", ...BACHI_TYPES].map((b) => (
           <button key={b} onClick={() => setParam("bachi", b)} className={`filter-tab ${current.bachi === b ? "active" : ""}`}>
             {b === "all" ? "すべて" : BACHI_TYPE_LABEL[b] ?? b}
           </button>
