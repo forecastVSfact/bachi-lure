@@ -1,0 +1,120 @@
+﻿import Link from "next/link";
+import { LureCard } from "@/components/LureCard";
+import { getLatestColumns, getLures, getRecommendedLures, getTopStats } from "@/lib/data";
+
+export const metadata = {
+  title: "バチ抜けルアー図鑑 | シーバスバチ抜け特化データベース bachi-lure.com",
+  description:
+    "川バチ・港湾バチ・クルクルバチ・底バチ。シーバスのバチ抜けパターンに特化したルアーデータベース。管理人の実釣インプレ付き。"
+};
+
+export default async function HomePage() {
+  const [stats, ranking, lures, columns] = await Promise.all([
+    getTopStats(),
+    getRecommendedLures(5),
+    getLures(),
+    getLatestColumns(3)
+  ]);
+
+  return (
+    <div className="space-y-12">
+      <section className="hero-element rounded bg-gradient-to-b from-[#020810] via-[#061220] to-[#0d2035] px-5 py-16 md:px-10">
+        <p
+          className="mb-4 text-[13px] uppercase text-[var(--water-light)]"
+          style={{ fontFamily: "Bebas Neue, sans-serif", letterSpacing: "0.3em" }}
+        >
+          SEABASS BACHI LURE DATABASE
+        </p>
+        <h1 className="serif-title text-5xl font-bold leading-tight [font-size:clamp(2rem,8vw,4.5rem)]">
+          <em className="text-[var(--amber)] not-italic">バチ抜けルアー地獄</em>
+        </h1>
+        <p className="mt-5 text-[13px] text-[var(--muted)]">
+          川バチ・港湾バチ・クルクルバチ・底バチ。管理人の実釣インプレ付き。
+        </p>
+        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <div className="rounded border border-[var(--border)] bg-black/10 p-4">
+            <p className="text-[11px] text-[var(--muted)]">掲載ルアー数</p>
+            <p className="text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>{stats.lureCount}</p>
+          </div>
+          <div className="rounded border border-[var(--border)] bg-black/10 p-4">
+            <p className="text-[11px] text-[var(--muted)]">バチ種別数</p>
+            <p className="text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>{stats.bachiTypeCount}</p>
+          </div>
+          <div className="rounded border border-[var(--border)] bg-black/10 p-4">
+            <p className="text-[11px] text-[var(--muted)]">実釣インプレ付き</p>
+            <p className="text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>{stats.impressionCount}</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="section-title mb-4">おすすめランキング</h2>
+        <div className="space-y-3">
+          {ranking.map((lure, idx) => (
+            <Link
+              key={lure.id}
+              href={`/lures/${lure.id}`}
+              className="lure-card block rounded px-4 py-4 hover:translate-y-[-2px]"
+            >
+              <div className="flex items-center gap-4">
+                <p
+                  className="w-8 text-center text-2xl"
+                  style={{
+                    fontFamily: "Bebas Neue, sans-serif",
+                    color: idx === 0 ? "#EF9F27" : idx === 1 ? "#aaa" : idx === 2 ? "#cd7c2f" : "var(--moon)"
+                  }}
+                >
+                  {idx + 1}
+                </p>
+                <div className="flex h-12 w-12 items-center justify-center rounded border border-[var(--border)] bg-[var(--water-mid)]">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#4a9aba" strokeWidth="1.5"/><circle cx="14" cy="11" r="1.2" fill="#4a9aba"/></svg>
+                </div>
+                <div className="flex-1">
+                  <p className="serif-title text-base">{lure.name}</p>
+                  <p className="text-xs text-[var(--muted)]">{lure.maker}</p>
+                </div>
+                <p className="text-sm text-[var(--amber)]">{"★".repeat(lure.rating ?? 0)}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="section-title">ルアー一覧</h2>
+          <Link href="/lures" className="text-sm text-[var(--teal)]">一覧へ</Link>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">{lures.slice(0, 9).map((lure) => <LureCard key={lure.id} lure={lure} />)}</div>
+      </section>
+
+      <section>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="section-title">コラム</h2>
+          <Link href="/columns" className="text-sm text-[var(--teal)]">もっと見る →</Link>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {columns.map((col) => (
+            <Link key={col.id} href={`/columns/${col.id}`} className="lure-card block p-4">
+              <p className="mb-2 inline-block rounded px-2 py-1 text-[10px] badge-bachi">{col.category}</p>
+              <h3 className="serif-title text-sm">{col.title}</h3>
+              <p className="mt-2 text-[11px] text-[var(--muted)]">{col.published_at?.slice(0, 10)}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded bg-[var(--water-mid)] p-10 text-center">
+        <div className="mx-auto mb-3 flex h-[60px] w-[60px] items-center justify-center rounded-full border border-[var(--teal)]">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#1D9E75" strokeWidth="1.8"/><circle cx="14" cy="11" r="1.3" fill="#1D9E75"/></svg>
+        </div>
+        <h2 className="serif-title text-lg">おやびん</h2>
+        <p className="mt-1 text-[13px] text-[var(--muted)]">釣り歴: 10年 / フィールド: 東京湾奥河川・港湾</p>
+        <div className="mx-auto mt-4 max-w-xl border-l-[3px] border-[var(--teal)] bg-black/10 p-3 text-left text-[13px] text-[var(--paper)]">
+          実釣ベースで、夜の水面に効くバチ抜けルアーだけを厳選しています。
+        </div>
+      </section>
+    </div>
+  );
+}
+
