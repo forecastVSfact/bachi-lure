@@ -48,6 +48,10 @@ export function LureCard({ lure }: { lure: Lure }) {
           <p className="text-xs text-[var(--paper)]">{lure.weight_g ?? "-"}g</p>
         </div>
         <div>
+          <p className="text-[10px] text-[var(--muted)]">アクション</p>
+          <p className="text-xs text-[var(--paper)]">{lure.action ?? "-"}</p>
+        </div>
+        <div>
           <p className="text-[10px] text-[var(--muted)]">泳ぎ姿勢</p>
           <p className="text-xs text-[var(--paper)]">{lure.swim_posture}</p>
         </div>

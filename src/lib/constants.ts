@@ -20,21 +20,6 @@ export const LURE_TYPE_LABEL: Record<string, string> = {
   sinking: "シンキング"
 };
 
-export const SINKING_TYPE_LABEL: Record<string, string> = {
-  slow: "スローシンキング",
-  fast: "ファストシンキング"
-};
-
-export const FALL_POSTURE_LABEL: Record<string, string> = {
-  horizontal: "水平",
-  head_down: "斜め下がり（頭下がり）"
-};
-
-export const FALL_TYPE_LABEL: Record<string, string> = {
-  shimmy: "シミーフォール",
-  horizontal: "水平フォール"
-};
-
 export const CASTING_DISTANCE_LABEL: Record<string, string> = {
   short: "近距離",
   medium: "中距離",

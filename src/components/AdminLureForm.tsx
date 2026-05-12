@@ -1,23 +1,16 @@
-﻿"use client";
-
-import { useState } from "react";
-import { BACHI_TYPE_LABEL, BACHI_TYPES } from "@/lib/constants";
+﻿import { BACHI_TYPE_LABEL, BACHI_TYPES } from "@/lib/constants";
 
 export function AdminLureForm({ action }: { action: (formData: FormData) => void }) {
-  const [lureType, setLureType] = useState("floating");
-
   return (
     <form action={action} className="grid gap-2 md:grid-cols-3">
       <input name="id" placeholder="id(編集時のみ)" className="field-dark p-2" />
       <input name="name" required placeholder="name" className="field-dark p-2" />
       <input name="maker" required placeholder="maker" className="field-dark p-2" />
-      <select name="lure_type" value={lureType} onChange={(e) => setLureType(e.target.value)} className="field-dark p-2">
+      <select name="lure_type" defaultValue="floating" className="field-dark p-2">
         <option value="floating">floating</option>
         <option value="sinking">sinking</option>
       </select>
-      {lureType === "sinking" ? <input name="sinking_type" placeholder="sinking_type" className="field-dark p-2" /> : <div />}
-      {lureType === "sinking" ? <input name="fall_posture" placeholder="fall_posture" className="field-dark p-2" /> : <div />}
-      {lureType === "sinking" ? <input name="fall_type" placeholder="fall_type" className="field-dark p-2" /> : <div />}
+      <input name="action" placeholder="action" className="field-dark p-2" />
       <input name="size_mm" placeholder="size_mm" className="field-dark p-2" />
       <input name="weight_g" placeholder="weight_g" className="field-dark p-2" />
       <input name="price_yen" placeholder="price_yen" className="field-dark p-2" />

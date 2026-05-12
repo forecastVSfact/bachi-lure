@@ -10,9 +10,7 @@ export type LureBase = {
   price_yen: number | null;
   hook_size: string | null;
   lure_type: LureType;
-  sinking_type: string | null;
-  fall_posture: string | null;
-  fall_type: string | null;
+  action: string | null;
   range_min_cm: number | null;
   range_max_cm: number | null;
   swim_posture: string;

@@ -70,6 +70,7 @@ export default async function LureDetailPage({ params }: { params: { id: string 
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">サイズ</p><p className="text-[15px] text-[var(--moon)]">{lure.size_mm ?? "-"}mm</p></div>
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">ウェイト</p><p className="text-[15px] text-[var(--moon)]">{lure.weight_g ?? "-"}g</p></div>
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">フック</p><p className="text-[15px] text-[var(--moon)]">{lure.hook_size ?? "-"}</p></div>
+          <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">アクション</p><p className="text-[15px] text-[var(--moon)]">{lure.action ?? "-"}</p></div>
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">泳ぎ姿勢</p><p className="text-[15px] text-[var(--moon)]">{lure.swim_posture}</p></div>
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">速度域</p><p className="text-[15px] text-[var(--moon)]">{lure.speed_range}</p></div>
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">飛距離</p><p className="text-[15px] text-[var(--moon)]">{lure.casting_distance}</p></div>
@@ -83,14 +84,6 @@ export default async function LureDetailPage({ params }: { params: { id: string 
         </div>
         <div className="flex justify-between text-[10px] text-[var(--muted)]"><span>0cm</span><span>100cm</span></div>
       </section>
-
-      {lure.lure_type === "sinking" && (
-        <section className="grid gap-3 md:grid-cols-3">
-          <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">シンキング種別</p><p className="text-[15px] text-[var(--moon)]">{lure.sinking_type ?? "-"}</p></div>
-          <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">フォール姿勢</p><p className="text-[15px] text-[var(--moon)]">{lure.fall_posture ?? "-"}</p></div>
-          <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">フォール種別</p><p className="text-[15px] text-[var(--moon)]">{lure.fall_type ?? "-"}</p></div>
-        </section>
-      )}
 
       <section className="border-l-[3px] border-[var(--teal)] bg-[rgba(29,158,117,0.05)] px-5 py-4 text-[13px] leading-[1.8] text-[var(--paper)]">
         <h2 className="mb-2 text-xs tracking-[0.1em] text-[var(--muted)]">管理人コメント</h2>
