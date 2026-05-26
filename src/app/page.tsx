@@ -33,8 +33,11 @@ export default async function HomePage() {
         </p>
         <div className="mt-8 max-w-md rounded border border-[var(--border)] bg-black/10 p-4">
           <p className="text-[11px] text-[var(--muted)]">掲載ルアー数</p>
-          <p className="mt-1 text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-            {stats.lureCount}件（実釣インプレ{stats.fishedCount}件）
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-1 leading-tight">
+            <span className="text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+              {stats.lureCount}件
+            </span>
+            <span className="text-[13px] text-[var(--paper)]">（実釣インプレ{stats.fishedCount}件）</span>
           </p>
         </div>
       </section>
