@@ -43,6 +43,19 @@ async function setLureImages(
   }
 }
 
+function parseOnlyArg(): Set<string> | null {
+  const idx = process.argv.indexOf("--only");
+  if (idx === -1) return null;
+  const raw = process.argv[idx + 1];
+  if (!raw) return null;
+  return new Set(
+    raw
+      .split(",")
+      .map((part) => normalizeKey(part.trim()))
+      .filter(Boolean)
+  );
+}
+
 async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -50,6 +63,8 @@ async function main() {
     console.error("Missing Supabase env vars");
     process.exit(1);
   }
+
+  const only = parseOnlyArg();
 
   if (!fs.existsSync(IMAGE_DIR)) {
     console.error(`Image folder not found: ${IMAGE_DIR}`);
@@ -89,6 +104,9 @@ async function main() {
 
   for (const file of files) {
     const stem = path.parse(file).name;
+    if (only && !only.has(normalizeKey(stem))) {
+      continue;
+    }
     const matches = byName.get(normalizeKey(stem));
     if (!matches?.length) {
       console.warn(`Skip (no lure match): ${file}`);

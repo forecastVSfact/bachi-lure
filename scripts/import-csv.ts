@@ -33,6 +33,10 @@ async function setLureImages(
   if (error) throw new Error(error.message);
 }
 
+function lureKey(name: string, maker: string): string {
+  return `${name}|||${maker}`.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+}
+
 function normalizeSpeedRange(raw: string | undefined): string {
   if (!raw?.trim()) return "all";
   const parts = raw.replace(/、/g, ",").split(",").map((p) => p.trim().toLowerCase().replace(/-/g, "_"));
@@ -66,14 +70,27 @@ async function main() {
   const rows = parse(csvText, { columns: true, skip_empty_lines: true }) as CsvRow[];
   const supabase = createClient(url, key);
 
+  const { data: existingLures, error: loadError } = await supabase.from("lures").select("id,name,maker");
+  if (loadError) {
+    console.error("Failed to load existing lures", loadError.message);
+    process.exit(1);
+  }
+
+  const idByKey = new Map<string, string>();
+  for (const lure of existingLures ?? []) {
+    idByKey.set(lureKey(lure.name, lure.maker), lure.id);
+  }
+
   for (const row of rows) {
     const bachiTypes = (row.bachi_types || row.bachi_type || "")
       .split(",")
       .map((value) => value.trim())
       .filter(Boolean);
 
+    const existingId = row.id?.trim() || idByKey.get(lureKey(row.name, row.maker));
+
     const payload = {
-      id: row.id || undefined,
+      id: existingId || undefined,
       name: row.name,
       maker: row.maker,
       lure_type: row.lure_type,
@@ -104,6 +121,8 @@ async function main() {
       console.error(`Failed to upsert lure: ${row.name}`, upsertError?.message);
       process.exit(1);
     }
+
+    idByKey.set(lureKey(row.name, row.maker), lure.id);
 
     const { error: deleteError } = await supabase.from("lure_bachi_types").delete().eq("lure_id", lure.id);
     if (deleteError) {

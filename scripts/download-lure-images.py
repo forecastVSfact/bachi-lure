@@ -41,16 +41,23 @@ HEADERS = {
     "Accept-Language": "ja-JP,ja;q=0.9",
 }
 
+MIN_URL_SCORE = 8
+
 BLOCK_URL = (
     "walmart", "cupcake", "flower", "deviantart", "blogspot", "pinimg",
     "tenor.com", "ytimg.com", "gif", "simpsons", "quotesgram", "alamy",
     "chair", "kennedy", "pngtree", "clipart", "corey-seager", "ocregister",
+    "pokemon", "template", "packing-list", "banner", "nfl_", "boxboxshirt",
+    "dgm88.com", "national-sorry", "zukan.pokemon", "naturum-fishingstore",
+    "newsatcl", "mosportshalloffame", "amd-img", "halloffame", "view.jpg?",
 )
 PREFER_URL = (
     "amazon.co.jp", "rakuten.co.jp", "yahoo.co.jp", "yimg.jp",
     "fishing", "anglers", "tsuriking", "honda", "daiwa", "megabass",
     "shimano", "duo-lure", "ima-japan", "jackall", "palms", "coreman",
     "timco", "evergreen", "o.s.p", "osp", "ecogear", "geecrack",
+    "kingfisher.co.jp", "casting.co.jp", "f-marunishi", "waterhouse",
+    "fishing-you", "openwater", "shop.r10s.jp",
 )
 
 AMAZON_IMG_RE = re.compile(
@@ -66,6 +73,8 @@ def score_url(url: str, name: str) -> int:
     low = url.lower()
     if any(b in low for b in BLOCK_URL):
         return -100
+    if "yimg.jp" in low and any(x in low for x in ("/news", "amd-img", "sph-")):
+        return -100
     s = 0
     if any(p in low for p in PREFER_URL):
         s += 12
@@ -78,28 +87,27 @@ def score_url(url: str, name: str) -> int:
     return s
 
 
-def fetch_ddgs_image(maker: str, name: str) -> str | None:
+def collect_ddgs_urls(maker: str, name: str) -> list[str]:
     if DDGS is None:
-        return None
+        return []
     query = search_query(maker, name)
-    for backend in ("google", "bing", "auto"):
+    found: list[str] = []
+    for backend in ("bing", "auto", "google"):
         try:
-            results = DDGS().images(query, region="jp-jp", max_results=12, backend=backend)
-            ranked = sorted(
-                (r.get("image") for r in results if r.get("image")),
-                key=lambda u: score_url(u, name),
-                reverse=True,
-            )
-            for url in ranked:
-                if score_url(url, name) >= 0:
-                    return url
+            results = DDGS().images(query, region="jp-jp", max_results=15, backend=backend)
+            for row in results:
+                url = row.get("image")
+                if url and url not in found:
+                    found.append(url)
+            if found:
+                break
         except Exception as exc:
-            print(f"  ddgs ({backend}) failed: {exc}")
+            log(f"  ddgs ({backend}) failed: {exc}")
         time.sleep(1)
-    return None
+    return found
 
 
-def fetch_bing_async_image(maker: str, name: str) -> str | None:
+def collect_bing_urls(maker: str, name: str) -> list[str]:
     query = search_query(maker, name)
     url = "https://www.bing.com/images/async?" + urllib.parse.urlencode(
         {"q": query, "first": 0, "count": 40, "mmasync": 1}
@@ -108,15 +116,21 @@ def fetch_bing_async_image(maker: str, name: str) -> str | None:
         res = requests.get(url, headers=HEADERS, timeout=30)
         res.raise_for_status()
     except requests.RequestException as exc:
-        print(f"  Bing async failed: {exc}")
-        return None
+        log(f"  Bing async failed: {exc}")
+        return []
+    return list(dict.fromkeys(re.findall(r'murl&quot;:&quot;(https://[^&]+?)&quot;', res.text)))
 
-    imgs = re.findall(r'murl&quot;:&quot;(https://[^&]+?)&quot;', res.text)
-    ranked = sorted(imgs, key=lambda u: score_url(u, name), reverse=True)
-    for candidate in ranked:
-        if score_url(candidate, name) >= 0:
-            return candidate
-    return ranked[0] if ranked else None
+
+def rank_urls(urls: list[str], name: str) -> list[str]:
+    unique = list(dict.fromkeys(urls))
+    return sorted(unique, key=lambda u: score_url(u, name), reverse=True)
+
+
+def log(message: str) -> None:
+    try:
+        print(message)
+    except UnicodeEncodeError:
+        print(message.encode("cp932", errors="replace").decode("cp932"))
 
 
 def fetch_amazon_image(session: requests.Session, maker: str, name: str) -> str | None:
@@ -235,33 +249,37 @@ def main() -> None:
         dest = OUT_DIR / f"{safe_path_name(name)}.jpg"
 
         if dest.exists() and dest.stat().st_size > 2000 and not args.force:
-            print(f"[{i}/{len(rows)}] Skip (exists): {name}")
+            log(f"[{i}/{len(rows)}] Skip (exists): {name}")
             skip += 1
             continue
 
-        print(f"[{i}/{len(rows)}] {maker} / {name}")
-        image_url = fetch_ddgs_image(maker, name)
-        if not image_url:
-            image_url = fetch_bing_async_image(maker, name)
-        if not image_url:
-            image_url = fetch_amazon_image(session, maker, name)
+        log(f"[{i}/{len(rows)}] {maker} / {name}")
 
-        if not image_url:
-            print("  No image found")
+        candidates = rank_urls(
+            collect_ddgs_urls(maker, name) + collect_bing_urls(maker, name),
+            name,
+        )
+        amazon_url = fetch_amazon_image(session, maker, name)
+        if amazon_url:
+            candidates = rank_urls([amazon_url] + candidates, name)
+
+        saved = False
+        for image_url in candidates:
+            if score_url(image_url, name) < MIN_URL_SCORE:
+                continue
+            log(f"  try score={score_url(image_url, name)}: {image_url[:80]}...")
+            raw = download_bytes(session, image_url)
+            if not raw:
+                continue
+            apply_background(raw, dest)
+            log(f"  Saved -> {dest.name}")
+            ok += 1
+            saved = True
+            break
+
+        if not saved:
+            log("  No suitable image found")
             fail += 1
-            time.sleep(DELAY_SEC)
-            continue
-
-        print(f"  URL: {image_url[:90]}...")
-        raw = download_bytes(session, image_url)
-        if not raw:
-            fail += 1
-            time.sleep(DELAY_SEC)
-            continue
-
-        apply_background(raw, dest)
-        print(f"  Saved -> {dest.name}")
-        ok += 1
         time.sleep(DELAY_SEC)
 
     print(f"\nDone: {ok} downloaded, {skip} skipped, {fail} failed")

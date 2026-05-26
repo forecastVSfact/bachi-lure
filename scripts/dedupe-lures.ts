@@ -12,6 +12,10 @@ type LureRow = {
   updated_at: string;
 };
 
+function lureKey(name: string, maker: string): string {
+  return `${name}|||${maker}`.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+}
+
 function score(row: LureRow, imageCount: number, bachiCount: number): number {
   let s = 0;
   if (row.comment?.trim()) s += 10;
@@ -38,7 +42,7 @@ async function main() {
 
   const groups = new Map<string, LureRow[]>();
   for (const lure of lures as LureRow[]) {
-    const keyName = `${lure.name}|||${lure.maker}`;
+    const keyName = lureKey(lure.name, lure.maker);
     const list = groups.get(keyName) ?? [];
     list.push(lure);
     groups.set(keyName, list);
