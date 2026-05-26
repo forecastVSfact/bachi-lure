@@ -30,6 +30,8 @@ npm run dev
 
 **手順の詳細は [docs/データ更新手順.md](docs/データ更新手順.md) を参照してください。**
 
+**ルアー画像**は [docs/画像の追加方法.md](docs/画像の追加方法.md) を参照（`luredatabase/images/` + `npm run import:images`）。
+
 要約:
 
 1. Excel を `luredatabase/` に置く（既定: `05131403_lures-data-v3.xlsx`）

@@ -63,6 +63,13 @@ def _format_rating(raw) -> str:
     return ""
 
 
+def _format_image_urls(raw) -> str:
+    if raw is None or str(raw).strip() == "":
+        return ""
+    text = str(raw).replace("、", ",").replace("\n", ",")
+    return ",".join(part.strip() for part in text.split(",") if part.strip())
+
+
 def normalize_bachi_types(raw) -> str:
     if raw is None or str(raw).strip() == "":
         return ""
@@ -114,6 +121,10 @@ def main() -> None:
         "rating",
         "comment",
     ]
+    if "image_urls" in fields:
+        columns.insert(columns.index("comment"), "image_urls")
+    elif "image_url" in fields:
+        columns.insert(columns.index("comment"), "image_urls")
     index = {name: fields.index(name) for name in fields if name in fields}
 
     rows_out: list[dict[str, str]] = []
@@ -144,6 +155,7 @@ def main() -> None:
                 "amazon_url": "" if not cell("amazon_url") else str(cell("amazon_url")).strip(),
                 "rakuten_url": "" if not cell("rakuten_url") else str(cell("rakuten_url")).strip(),
                 "rating": _format_rating(cell("rating")),
+                "image_urls": _format_image_urls(cell("image_urls") if "image_urls" in index else cell("image_url") if "image_url" in index else None),
                 "comment": "" if not cell("comment") else str(cell("comment")).strip(),
             }
         )

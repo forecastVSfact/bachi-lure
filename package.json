@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "import:lures:csv": "ts-node scripts/import-csv.ts luredatabase/lures.csv",
-    "import:lures": "python scripts/xlsx-to-csv.py && npm run import:lures:csv"
+    "import:lures": "python scripts/xlsx-to-csv.py && npm run import:lures:csv",
+    "import:images": "ts-node scripts/import-images.ts",
+    "download:images": "python scripts/download-lure-images.py",
+    "setup:images": "npm run download:images && npm run import:images"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

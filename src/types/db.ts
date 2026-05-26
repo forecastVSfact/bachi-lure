@@ -27,6 +27,7 @@ export type LureBase = {
 
 export type Lure = LureBase & {
   bachi_types: BachiType[];
+  image_url?: string | null;
 };
 
 export type LureImage = {

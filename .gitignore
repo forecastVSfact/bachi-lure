@@ -4,4 +4,8 @@ out
 .env*.local
 .vercel
 tsconfig.tsbuildinfo
+luredatabase/images/*.jpg
+luredatabase/images/*.jpeg
+luredatabase/images/*.png
+luredatabase/images/*.webp
 

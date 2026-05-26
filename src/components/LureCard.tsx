@@ -18,12 +18,16 @@ export function LureCard({ lure }: { lure: Lure }) {
           </span>
           <span className="badge-type rounded px-2 py-1">{LURE_TYPE_LABEL[lure.lure_type] ?? lure.lure_type}</span>
         </div>
-        <div className="flex h-full items-center justify-center">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden>
-            <path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#4a9aba" strokeWidth="1.8" />
-            <circle cx="14" cy="11" r="1.4" fill="#4a9aba" />
-          </svg>
-        </div>
+        {lure.image_url ? (
+          <img src={lure.image_url} alt={lure.name} className="h-full w-full object-cover" loading="lazy" />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#4a9aba" strokeWidth="1.8" />
+              <circle cx="14" cy="11" r="1.4" fill="#4a9aba" />
+            </svg>
+          </div>
+        )}
       </div>
 
       <h3 className="serif-title text-base font-bold">{lure.name}</h3>

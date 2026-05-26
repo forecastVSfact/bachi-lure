@@ -32,7 +32,7 @@ export default async function LureDetailPage({ params }: { params: { id: string 
       </div>
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3">
-          <LureGallery images={images} />
+          <LureGallery images={images} lureName={lure.name} />
         </div>
         <div className="lure-card space-y-4 rounded p-6 lg:col-span-2">
           <p className="flex flex-wrap gap-2 text-xs">

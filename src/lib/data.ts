@@ -1,15 +1,22 @@
-﻿import { createSupabaseServerClient } from "@/lib/supabase-server";
+﻿import { pickPrimaryImageUrl } from "@/lib/lure-image";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 import type { ColumnPost, Lure, LureImage } from "@/types/db";
 
-type LureRowWithRelations = Omit<Lure, "bachi_types"> & {
+const LURE_SELECT = "*, lure_bachi_types(bachi_type), lure_images(id, external_url, storage_path, sort_order)";
+
+type LureRowWithRelations = Omit<Lure, "bachi_types" | "image_url"> & {
   lure_bachi_types?: Array<{ bachi_type: string }>;
+  lure_images?: Array<Pick<LureImage, "id" | "external_url" | "storage_path" | "sort_order">>;
 };
 
 function toLure(row: LureRowWithRelations): Lure {
   const bachi_types = (row.lure_bachi_types ?? []).map((item) => item.bachi_type).filter(Boolean) as Lure["bachi_types"];
+  const lure_images = row.lure_images ?? [];
+  const { lure_bachi_types: _bachi, lure_images: _images, ...base } = row;
   return {
-    ...row,
-    bachi_types
+    ...base,
+    bachi_types,
+    image_url: pickPrimaryImageUrl(lure_images as LureImage[])
   };
 }
 
@@ -34,7 +41,7 @@ export async function getRecommendedLures(limit = 5) {
   const supabase = createSupabaseServerClient();
   const { data } = await supabase
     .from("lures")
-    .select("*, lure_bachi_types(bachi_type)")
+    .select(LURE_SELECT)
     .eq("rating", 5)
     .order("updated_at", { ascending: false })
     .limit(limit);
@@ -50,7 +57,7 @@ export async function getLures(filters?: {
   q?: string;
 }) {
   const supabase = createSupabaseServerClient();
-  let query = supabase.from("lures").select("*, lure_bachi_types(bachi_type)").order("updated_at", { ascending: false });
+  let query = supabase.from("lures").select(LURE_SELECT).order("updated_at", { ascending: false });
 
   if (filters?.bachi && filters.bachi !== "all") {
     const { data: matches } = await supabase.from("lure_bachi_types").select("lure_id").eq("bachi_type", filters.bachi);
@@ -69,7 +76,7 @@ export async function getLures(filters?: {
 
 export async function getLureById(id: string) {
   const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("lures").select("*, lure_bachi_types(bachi_type)").eq("id", id).single();
+  const { data } = await supabase.from("lures").select(LURE_SELECT).eq("id", id).single();
   return data ? toLure(data as LureRowWithRelations) : null;
 }
 
@@ -91,7 +98,7 @@ export async function getRelatedLures(lureId: string, bachiTypes: string[]) {
   if (!lureIds.length) return [];
   const { data } = await supabase
     .from("lures")
-    .select("*, lure_bachi_types(bachi_type)")
+    .select(LURE_SELECT)
     .in("id", lureIds)
     .neq("id", lureId)
     .limit(3);
