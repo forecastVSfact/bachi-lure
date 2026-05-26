@@ -1,63 +1,132 @@
 """
-Download lure product images from Amazon/Rakuten search URLs in lures.csv.
-Usage: python scripts/download-lure-images.py
+Download lure images via image search (Google/Bing through ddgs).
+Query always includes maker + lure name. Replaces near-white backgrounds with site color.
+
+Usage:
+  python scripts/download-lure-images.py              # skip existing files
+  python scripts/download-lure-images.py --force      # re-download all
+  python scripts/download-lure-images.py --only エスフォーneo125,ヨレヨレ
 """
 from __future__ import annotations
 
+import argparse
 import csv
 import re
 import time
+import unicodedata
 import urllib.parse
+from io import BytesIO
 from pathlib import Path
-from urllib.parse import parse_qs, unquote, urlparse
 
 import requests
+
+try:
+    from ddgs import DDGS
+except ImportError:
+    DDGS = None  # type: ignore
+
+try:
+    from PIL import Image
+except ImportError:
+    Image = None  # type: ignore
 
 ROOT = Path(__file__).resolve().parents[1]
 CSV_PATH = ROOT / "luredatabase" / "lures.csv"
 OUT_DIR = ROOT / "luredatabase" / "images"
-DELAY_SEC = 1.2
+BG_COLOR = (13, 32, 53)  # --water-mid #0d2035
+DELAY_SEC = 2.5
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.8",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+    "Accept-Language": "ja-JP,ja;q=0.9",
 }
+
+BLOCK_URL = (
+    "walmart", "cupcake", "flower", "deviantart", "blogspot", "pinimg",
+    "tenor.com", "ytimg.com", "gif", "simpsons", "quotesgram", "alamy",
+    "chair", "kennedy", "pngtree", "clipart", "corey-seager", "ocregister",
+)
+PREFER_URL = (
+    "amazon.co.jp", "rakuten.co.jp", "yahoo.co.jp", "yimg.jp",
+    "fishing", "anglers", "tsuriking", "honda", "daiwa", "megabass",
+    "shimano", "duo-lure", "ima-japan", "jackall", "palms", "coreman",
+    "timco", "evergreen", "o.s.p", "osp", "ecogear", "geecrack",
+)
 
 AMAZON_IMG_RE = re.compile(
     r"https://m\.media-amazon\.com/images/I/([A-Za-z0-9+._%-]+)\._AC_[A-Za-z0-9_]+\.jpg"
 )
-RAKUTEN_PRODUCT_RE = re.compile(
-    r"https://thumbnail\.image\.rakuten\.co\.jp/@0_mall/[^\"'\s>]+\.jpg"
-)
 
 
-def amazon_search_url(name: str, maker: str) -> str:
-    query = f"{name} {maker}".strip()
-    return "https://www.amazon.co.jp/s?k=" + urllib.parse.quote(query)
+def search_query(maker: str, name: str) -> str:
+    return f"{maker} {name} シーバス ルアー".strip()
 
 
-def rakuten_search_url(affiliate_or_search: str) -> str | None:
-    if not affiliate_or_search:
+def score_url(url: str, name: str) -> int:
+    low = url.lower()
+    if any(b in low for b in BLOCK_URL):
+        return -100
+    s = 0
+    if any(p in low for p in PREFER_URL):
+        s += 12
+    if "media-amazon.com" in low:
+        s += 8
+    compact = re.sub(r"\s+", "", name).lower()
+    for token in (compact[:8], compact[-6:]):
+        if len(token) >= 4 and token in low:
+            s += 4
+    return s
+
+
+def fetch_ddgs_image(maker: str, name: str) -> str | None:
+    if DDGS is None:
         return None
-    if "search.rakuten.co.jp" in affiliate_or_search:
-        return affiliate_or_search
-    parsed = urlparse(affiliate_or_search)
-    pc = parse_qs(parsed.query).get("pc", [""])[0]
-    if pc:
-        return unquote(pc)
+    query = search_query(maker, name)
+    for backend in ("google", "bing", "auto"):
+        try:
+            results = DDGS().images(query, region="jp-jp", max_results=12, backend=backend)
+            ranked = sorted(
+                (r.get("image") for r in results if r.get("image")),
+                key=lambda u: score_url(u, name),
+                reverse=True,
+            )
+            for url in ranked:
+                if score_url(url, name) >= 0:
+                    return url
+        except Exception as exc:
+            print(f"  ddgs ({backend}) failed: {exc}")
+        time.sleep(1)
     return None
 
 
-def upscale_amazon(url: str, image_id: str) -> str:
-    return f"https://m.media-amazon.com/images/I/{image_id}._AC_SL1500_.jpg"
+def fetch_bing_async_image(maker: str, name: str) -> str | None:
+    query = search_query(maker, name)
+    url = "https://www.bing.com/images/async?" + urllib.parse.urlencode(
+        {"q": query, "first": 0, "count": 40, "mmasync": 1}
+    )
+    try:
+        res = requests.get(url, headers=HEADERS, timeout=30)
+        res.raise_for_status()
+    except requests.RequestException as exc:
+        print(f"  Bing async failed: {exc}")
+        return None
+
+    imgs = re.findall(r'murl&quot;:&quot;(https://[^&]+?)&quot;', res.text)
+    ranked = sorted(imgs, key=lambda u: score_url(u, name), reverse=True)
+    for candidate in ranked:
+        if score_url(candidate, name) >= 0:
+            return candidate
+    return ranked[0] if ranked else None
 
 
-def fetch_amazon_image(session: requests.Session, url: str) -> str | None:
+def fetch_amazon_image(session: requests.Session, maker: str, name: str) -> str | None:
+    query = urllib.parse.quote(f"{maker} {name}")
+    url = f"https://www.amazon.co.jp/s?k={query}"
     try:
         res = session.get(url, headers=HEADERS, timeout=25)
         res.raise_for_status()
     except requests.RequestException as exc:
-        print(f"  Amazon fetch failed: {exc}")
+        print(f"  Amazon fallback failed: {exc}")
         return None
 
     seen: set[str] = set()
@@ -66,38 +135,49 @@ def fetch_amazon_image(session: requests.Session, url: str) -> str | None:
         if image_id in seen:
             continue
         seen.add(image_id)
-        return upscale_amazon(match.group(0), image_id)
+        return f"https://m.media-amazon.com/images/I/{image_id}._AC_SL1500_.jpg"
     return None
 
 
-def fetch_rakuten_image(session: requests.Session, url: str) -> str | None:
-    try:
-        res = session.get(url, headers=HEADERS, timeout=25)
-        res.raise_for_status()
-    except requests.RequestException as exc:
-        print(f"  Rakuten fetch failed: {exc}")
-        return None
-
-    for match in RAKUTEN_PRODUCT_RE.finditer(res.text):
-        img = match.group(0)
-        if "/cabinet/" in img or "/item" in img:
-            return img.replace("?fitin=96:96", "").split("?")[0]
-    matches = RAKUTEN_PRODUCT_RE.findall(res.text)
-    return matches[0].split("?")[0] if matches else None
-
-
-def download_file(session: requests.Session, url: str, dest: Path) -> bool:
+def download_bytes(session: requests.Session, url: str) -> bytes | None:
     try:
         res = session.get(url, headers=HEADERS, timeout=30)
         res.raise_for_status()
-        if "image" not in res.headers.get("Content-Type", "") and len(res.content) < 1000:
-            print(f"  Not an image: {url}")
-            return False
-        dest.write_bytes(res.content)
-        return True
+        if len(res.content) < 1500:
+            return None
+        return res.content
     except requests.RequestException as exc:
         print(f"  Download failed: {exc}")
-        return False
+        return None
+
+
+def apply_background(data: bytes, dest: Path) -> None:
+    if Image is None:
+        dest.write_bytes(data)
+        return
+
+    img = Image.open(BytesIO(data)).convert("RGBA")
+    pixels = img.load()
+    w, h = img.size
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = pixels[x, y]
+            if a < 20:
+                pixels[x, y] = (*BG_COLOR, 255)
+                continue
+            brightness = (r + g + b) / 3
+            if brightness >= 248:
+                pixels[x, y] = (*BG_COLOR, 255)
+            elif brightness >= 210:
+                t = (brightness - 210) / 38
+                nr = int(r * (1 - t) + BG_COLOR[0] * t)
+                ng = int(g * (1 - t) + BG_COLOR[1] * t)
+                nb = int(b * (1 - t) + BG_COLOR[2] * t)
+                pixels[x, y] = (nr, ng, nb, 255)
+
+    rgb = Image.new("RGB", img.size, BG_COLOR)
+    rgb.paste(img, mask=img.split()[3])
+    rgb.save(dest, format="JPEG", quality=90)
 
 
 def safe_path_name(name: str) -> str:
@@ -106,40 +186,65 @@ def safe_path_name(name: str) -> str:
     return name.strip()
 
 
+def normalize_match_key(name: str) -> str:
+    compact = re.sub(r"\s+", "", name).lower()
+    return unicodedata.normalize("NFKC", compact)
+
+
+def load_rows(only: set[str] | None) -> list[dict[str, str]]:
+    with CSV_PATH.open(encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    if not only:
+        return rows
+    keys = {normalize_match_key(x) for x in only}
+    filtered = [row for row in rows if normalize_match_key(row["name"]) in keys]
+    return filtered
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force", action="store_true", help="Re-download even if file exists")
+    parser.add_argument(
+        "--only",
+        help="Comma-separated lure names to update (e.g. エスフォーneo125,ヨレヨレ)",
+    )
+    args = parser.parse_args()
+
     if not CSV_PATH.exists():
         print(f"Missing {CSV_PATH}")
         raise SystemExit(1)
+    if DDGS is None:
+        print("Install: pip install ddgs")
+        raise SystemExit(1)
+    if Image is None:
+        print("Install: pip install pillow")
+        raise SystemExit(1)
+
+    only = None
+    if args.only:
+        only = {part.strip() for part in args.only.split(",") if part.strip()}
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    with CSV_PATH.open(encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
-
+    rows = load_rows(only)
     session = requests.Session()
-    ok = 0
-    skip = 0
-    fail = 0
+    ok = skip = fail = 0
 
     for i, row in enumerate(rows, start=1):
         name = row["name"].strip()
         maker = row.get("maker", "").strip()
         dest = OUT_DIR / f"{safe_path_name(name)}.jpg"
 
-        if dest.exists() and dest.stat().st_size > 2000:
+        if dest.exists() and dest.stat().st_size > 2000 and not args.force:
             print(f"[{i}/{len(rows)}] Skip (exists): {name}")
             skip += 1
             continue
 
-        print(f"[{i}/{len(rows)}] {name}")
-
-        amazon_url = row.get("amazon_url") or amazon_search_url(name, maker)
-        image_url = fetch_amazon_image(session, amazon_url)
-
+        print(f"[{i}/{len(rows)}] {maker} / {name}")
+        image_url = fetch_ddgs_image(maker, name)
         if not image_url:
-            rakuten_url = rakuten_search_url(row.get("rakuten_url", ""))
-            if rakuten_url:
-                image_url = fetch_rakuten_image(session, rakuten_url)
+            image_url = fetch_bing_async_image(maker, name)
+        if not image_url:
+            image_url = fetch_amazon_image(session, maker, name)
 
         if not image_url:
             print("  No image found")
@@ -147,12 +252,16 @@ def main() -> None:
             time.sleep(DELAY_SEC)
             continue
 
-        if download_file(session, image_url, dest):
-            print(f"  Saved -> {dest.name}")
-            ok += 1
-        else:
+        print(f"  URL: {image_url[:90]}...")
+        raw = download_bytes(session, image_url)
+        if not raw:
             fail += 1
+            time.sleep(DELAY_SEC)
+            continue
 
+        apply_background(raw, dest)
+        print(f"  Saved -> {dest.name}")
+        ok += 1
         time.sleep(DELAY_SEC)
 
     print(f"\nDone: {ok} downloaded, {skip} skipped, {fail} failed")
