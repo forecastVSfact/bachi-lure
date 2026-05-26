@@ -4,6 +4,23 @@ import { createClient } from "@supabase/supabase-js";
 
 type CsvRow = Record<string, string>;
 
+const CANONICAL_SPEED = new Set(["dead_slow", "slow", "medium", "all"]);
+
+function normalizeSpeedRange(raw: string | undefined): string {
+  if (!raw?.trim()) return "all";
+  const parts = raw.replace(/、/g, ",").split(",").map((p) => p.trim().toLowerCase().replace(/-/g, "_"));
+  const canonical = new Set<string>();
+  for (const part of parts) {
+    let key = part;
+    if (key === "deadslow") key = "dead_slow";
+    if (key === "fast" || key === "medium_fast") key = "medium";
+    if (CANONICAL_SPEED.has(key)) canonical.add(key);
+  }
+  if (canonical.size === 0) return "all";
+  if (canonical.size === 1) return Array.from(canonical)[0];
+  return "all";
+}
+
 async function main() {
   const filePath = process.argv[2];
   if (!filePath) {
@@ -18,7 +35,7 @@ async function main() {
     process.exit(1);
   }
 
-  const csvText = fs.readFileSync(filePath, "utf-8");
+  const csvText = fs.readFileSync(filePath, "utf-8").replace(/^\uFEFF/, "");
   const rows = parse(csvText, { columns: true, skip_empty_lines: true }) as CsvRow[];
   const supabase = createClient(url, key);
 
@@ -34,7 +51,7 @@ async function main() {
       maker: row.maker,
       lure_type: row.lure_type,
       swim_posture: row.swim_posture,
-      speed_range: row.speed_range,
+      speed_range: normalizeSpeedRange(row.speed_range),
       casting_distance: row.casting_distance,
       size_mm: row.size_mm ? Number(row.size_mm) : null,
       weight_g: row.weight_g ? Number(row.weight_g) : null,

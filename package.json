@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "import:lures:csv": "ts-node scripts/import-csv.ts luredatabase/lures.csv",
+    "import:lures": "python scripts/xlsx-to-csv.py && npm run import:lures:csv"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

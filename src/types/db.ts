@@ -1,5 +1,5 @@
 ﻿export type LureType = "floating" | "sinking";
-export type BachiType = "river" | "harbor_drift" | "harbor_wave" | "kurukuru" | "bottom";
+export type BachiType = "river" | "harbor" | "kurukuru" | "bottom";
 
 export type LureBase = {
   id: string;

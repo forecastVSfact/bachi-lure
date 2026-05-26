@@ -26,9 +26,13 @@ SUPABASE_SERVICE_ROLE_KEY=...
 npm run dev
 ```
 
-## CSV import
+## ルアーデータの更新（Excel）
 
-```bash
-npx ts-node scripts/import-csv.ts lures.csv
-```
+**手順の詳細は [docs/データ更新手順.md](docs/データ更新手順.md) を参照してください。**
+
+要約:
+
+1. Excel を `luredatabase/` に置く（既定: `05131403_lures-data-v3.xlsx`）
+2. `npm run import:lures` で Supabase に反映
+3. `npm run dev` で http://localhost:3000/lures を確認
 

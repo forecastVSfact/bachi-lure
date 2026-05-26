@@ -1,12 +1,11 @@
 ﻿export const BACHI_TYPE_LABEL: Record<string, string> = {
   river: "川バチ",
-  harbor_drift: "港湾バチ（漂うタイプ）",
-  harbor_wave: "港湾バチ（引き波タイプ）",
+  harbor: "港湾バチ",
   kurukuru: "クルクルバチ",
   bottom: "底バチ"
 };
 
-export const BACHI_TYPES = ["river", "harbor_drift", "harbor_wave", "kurukuru", "bottom"] as const;
+export const BACHI_TYPES = ["river", "harbor", "kurukuru", "bottom"] as const;
 
 export const SPEED_RANGE_LABEL: Record<string, string> = {
   dead_slow: "デッドスロー",
