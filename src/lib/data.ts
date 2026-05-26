@@ -22,18 +22,15 @@ function toLure(row: LureRowWithRelations): Lure {
 
 export async function getTopStats() {
   const supabase = createSupabaseServerClient();
-  const [{ count: lureCount }, { count: impressionCount }, { data: bachiRows }] = await Promise.all([
+  const [{ count: lureCount }, { count: fishedCount }] = await Promise.all([
     supabase.from("lures").select("id", { count: "exact", head: true }),
-    supabase.from("lures").select("id", { count: "exact", head: true }).not("comment", "is", null),
-    supabase.from("lure_bachi_types").select("bachi_type")
+    // 評価（rating）あり＝管理人が実釣したルアー。未評価は掲載のみで実釣インプレ対象外。
+    supabase.from("lures").select("id", { count: "exact", head: true }).not("rating", "is", null)
   ]);
-
-  const bachiTypeCount = new Set((bachiRows ?? []).map((row) => row.bachi_type)).size;
 
   return {
     lureCount: lureCount ?? 0,
-    bachiTypeCount,
-    impressionCount: impressionCount ?? 0
+    fishedCount: fishedCount ?? 0
   };
 }
 

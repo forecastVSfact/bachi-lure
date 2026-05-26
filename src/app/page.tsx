@@ -31,19 +31,11 @@ export default async function HomePage() {
         <p className="mt-5 text-[13px] text-[var(--muted)]">
           川バチ・港湾バチ・クルクルバチ・底バチ。管理人の実釣インプレ付き。
         </p>
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          <div className="rounded border border-[var(--border)] bg-black/10 p-4">
-            <p className="text-[11px] text-[var(--muted)]">掲載ルアー数</p>
-            <p className="text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>{stats.lureCount}</p>
-          </div>
-          <div className="rounded border border-[var(--border)] bg-black/10 p-4">
-            <p className="text-[11px] text-[var(--muted)]">バチ種別数</p>
-            <p className="text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>{stats.bachiTypeCount}</p>
-          </div>
-          <div className="rounded border border-[var(--border)] bg-black/10 p-4">
-            <p className="text-[11px] text-[var(--muted)]">実釣インプレ付き</p>
-            <p className="text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>{stats.impressionCount}</p>
-          </div>
+        <div className="mt-8 max-w-md rounded border border-[var(--border)] bg-black/10 p-4">
+          <p className="text-[11px] text-[var(--muted)]">掲載ルアー</p>
+          <p className="mt-1 text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+            数{stats.lureCount}件（実釣インプレ{stats.fishedCount}件）
+          </p>
         </div>
       </section>
 
