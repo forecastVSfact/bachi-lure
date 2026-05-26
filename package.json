@@ -9,14 +9,13 @@
     "lint": "next lint",
     "import:lures:csv": "ts-node scripts/import-csv.ts luredatabase/lures.csv",
     "import:lures": "python scripts/xlsx-to-csv.py && npm run import:lures:csv",
-    "download:images": "python scripts/download-lure-images.py",
     "import:images": "ts-node scripts/import-images.ts",
-    "setup:images": "npm run download:images && npm run import:images",
+    "import:images:only": "ts-node scripts/import-images.ts --only",
+    "clear:external-images": "ts-node scripts/clear-external-image-urls.ts",
+    "images:missing": "ts-node scripts/list-missing-images.ts",
     "dedupe:lures": "ts-node scripts/dedupe-lures.ts",
     "audit:lures": "ts-node scripts/audit-lures.ts",
-    "prune:stray-lures": "ts-node scripts/prune-stray-lures.ts",
-    "import:images:only": "ts-node scripts/import-images.ts --only",
-    "fix:images": "python scripts/download-lure-images.py --force --only \"エスフォーneo125,ヨレヨレ,ナイトレイド90F,SLミノー125,グース125F,バロール6５,コアマン アルカリ,チキチータ,チキチータベイビー,ハイドロアッパー,カッター90,エリア10,モアザン キャロット72S,モアザン ミドルアッパー,ラザミン90,カーム110,カーム80,ワンダー60,ワンダー80,ワンダースリム70,エクスセンス トライデント90S,リードフィール120SG\" && ts-node scripts/import-images.ts --only \"エスフォーneo125,ヨレヨレ,ナイトレイド90F,SLミノー125,グース125F,バロール6５,コアマン アルカリ,チキチータ,チキチータベイビー,ハイドロアッパー,カッター90,エリア10,モアザン キャロット72S,モアザン ミドルアッパー,ラザミン90,カーム110,カーム80,ワンダー60,ワンダー80,ワンダースリム70,エクスセンス トライデント90S,リードフィール120SG\""
+    "prune:stray-lures": "ts-node scripts/prune-stray-lures.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

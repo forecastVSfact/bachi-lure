@@ -68,17 +68,20 @@ export async function upsertLure(formData: FormData) {
       );
     }
 
-    const externalUrls = (payload.image_urls || "").split("\n").map((x) => x.trim()).filter(Boolean);
     const storagePaths = (payload.storage_paths || "").split("\n").map((x) => x.trim()).filter(Boolean);
 
     await supabase.from("lure_images").delete().eq("lure_id", lure.id);
 
-    const rows = [
-      ...externalUrls.map((url, i) => ({ lure_id: lure.id, external_url: url, storage_path: null, sort_order: i })),
-      ...storagePaths.map((path, i) => ({ lure_id: lure.id, external_url: null, storage_path: path, sort_order: i + externalUrls.length }))
-    ];
-
-    if (rows.length) await supabase.from("lure_images").insert(rows);
+    if (storagePaths.length) {
+      await supabase.from("lure_images").insert(
+        storagePaths.map((storage_path, sort_order) => ({
+          lure_id: lure.id,
+          external_url: null,
+          storage_path,
+          sort_order
+        }))
+      );
+    }
   }
 
   revalidatePath("/admin");

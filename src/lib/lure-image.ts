@@ -2,8 +2,8 @@ import type { LureImage } from "@/types/db";
 
 const STORAGE_BUCKET = "lure-images";
 
-export function getLureImagePublicUrl(image: Pick<LureImage, "id" | "external_url" | "storage_path">): string | null {
-  if (image.external_url?.trim()) return image.external_url.trim();
+/** 表示は Supabase Storage のみ（luredatabase/images から import:images で登録） */
+export function getLureImagePublicUrl(image: Pick<LureImage, "id" | "storage_path">): string | null {
   if (!image.storage_path?.trim()) return null;
 
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;

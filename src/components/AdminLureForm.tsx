@@ -35,8 +35,10 @@ export function AdminLureForm({ action }: { action: (formData: FormData) => void
       <input name="amazon_url" placeholder="amazon_url" className="field-dark p-2" />
       <input name="rakuten_url" placeholder="rakuten_url" className="field-dark p-2" />
       <input name="rating" placeholder="rating" className="field-dark p-2" />
-      <textarea name="image_urls" placeholder="外部画像URL(改行区切り)" className="field-dark p-2 md:col-span-3" />
-      <textarea name="storage_paths" placeholder="Storageパス(改行区切り)" className="field-dark p-2 md:col-span-3" />
+      <p className="text-xs text-[var(--muted)] md:col-span-3">
+        画像は luredatabase/images/ に置いて npm run import:images で登録してください。
+      </p>
+      <textarea name="storage_paths" placeholder="Storageパス(上級者・改行区切り)" className="field-dark p-2 md:col-span-3" />
       <textarea name="comment" placeholder="comment" className="field-dark p-2 md:col-span-3" />
       <button className="rounded bg-[var(--teal)] px-4 py-2 text-white md:col-span-3">保存</button>
     </form>

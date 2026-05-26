@@ -6,33 +6,6 @@ type CsvRow = Record<string, string>;
 
 const CANONICAL_SPEED = new Set(["dead_slow", "slow", "medium", "all"]);
 
-function parseImageUrls(raw: string | undefined): string[] {
-  if (!raw?.trim()) return [];
-  return raw
-    .split(/[\n,]/)
-    .map((value) => value.trim())
-    .filter(Boolean);
-}
-
-async function setLureImages(
-  supabase: ReturnType<typeof createClient>,
-  lureId: string,
-  urls: string[]
-) {
-  await supabase.from("lure_images").delete().eq("lure_id", lureId);
-  if (!urls.length) return;
-
-  const { error } = await supabase.from("lure_images").insert(
-    urls.map((external_url, sort_order) => ({
-      lure_id: lureId,
-      external_url,
-      storage_path: null,
-      sort_order
-    }))
-  );
-  if (error) throw new Error(error.message);
-}
-
 function lureKey(name: string, maker: string): string {
   return `${name}|||${maker}`.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
 }
@@ -143,15 +116,7 @@ async function main() {
       }
     }
 
-    const imageUrls = parseImageUrls(row.image_urls || row.image_url);
-    if (imageUrls.length) {
-      try {
-        await setLureImages(supabase, lure.id, imageUrls);
-      } catch (imageError) {
-        console.error(`Failed to insert images for: ${row.name}`, imageError);
-        process.exit(1);
-      }
-    }
+    // 画像は luredatabase/images/ + npm run import:images で登録（URLリンクは使わない）
   }
 
   console.log(`Imported ${rows.length} lures from ${filePath}`);
