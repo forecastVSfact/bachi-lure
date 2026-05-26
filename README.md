@@ -36,3 +36,9 @@ npm run dev
 2. `npm run import:lures` で Supabase に反映
 3. `npm run dev` で http://localhost:3000/lures を確認
 
+## デプロイ（本番公開）
+
+**手順の詳細は [docs/デプロイ手順.md](docs/デプロイ手順.md) を参照してください。**
+
+`master` へ push すると Vercel が自動デプロイします（要: Vercel と GitHub の連携、環境変数設定）。
+
