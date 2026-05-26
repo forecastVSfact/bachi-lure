@@ -20,11 +20,9 @@ export function LureGallery({ images, lureName }: { images: LureImage[]; lureNam
 
   return (
     <div>
-      <img
-        src={current}
-        alt={alt}
-        className="h-72 w-full rounded border border-[var(--border)] bg-[var(--water-mid)] object-cover"
-      />
+      <div className="flex h-72 w-full items-center justify-center rounded border border-[var(--border)] bg-[var(--water-mid)] p-4">
+        <img src={current} alt={alt} className="max-h-full max-w-full object-contain" />
+      </div>
       {list.length > 1 ? (
         <div className="mt-2 flex gap-2 overflow-x-auto">
           {list.map((img, i) => (
@@ -32,9 +30,9 @@ export function LureGallery({ images, lureName }: { images: LureImage[]; lureNam
               key={img.id}
               type="button"
               onClick={() => setIndex(i)}
-              className={`h-16 w-16 overflow-hidden rounded border ${i === index ? "border-[var(--teal)]" : "border-[var(--border)]"}`}
+              className={`flex h-16 w-16 items-center justify-center overflow-hidden rounded border bg-[var(--water-mid)] p-1 ${i === index ? "border-[var(--teal)]" : "border-[var(--border)]"}`}
             >
-              <img src={resolveUrl(img)} alt="" className="h-full w-full object-cover" />
+              <img src={resolveUrl(img)} alt="" className="max-h-full max-w-full object-contain" />
             </button>
           ))}
         </div>
