@@ -6,7 +6,7 @@ import type { LureImage } from "@/types/db";
 
 const PLACEHOLDER = "/placeholder.svg";
 
-function resolveUrl(image: Pick<LureImage, "external_url" | "storage_path">): string {
+function resolveUrl(image: Pick<LureImage, "id" | "external_url" | "storage_path">): string {
   return getLureImagePublicUrl(image) ?? PLACEHOLDER;
 }
 
