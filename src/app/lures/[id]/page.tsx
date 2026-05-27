@@ -59,7 +59,10 @@ function AffiliateButtons({ lure }: { lure: Lure }) {
 
 function AdminComment({ lure }: { lure: Lure }) {
   return (
-    <section className="border-l-[3px] border-[var(--teal)] bg-[rgba(29,158,117,0.05)] px-5 py-4 text-[13px] leading-[1.8] text-[var(--paper)]">
+    <section
+      id="admin-comment"
+      className="border-l-[3px] border-[var(--teal)] bg-[rgba(29,158,117,0.05)] px-5 py-4 text-[13px] leading-[1.8] text-[var(--paper)]"
+    >
       <h2 className="mb-2 text-xs tracking-[0.1em] text-[var(--muted)]">管理人コメント</h2>
       <p>{lure.comment && lure.comment.trim() ? lure.comment : "使ったことがないため記載なし"}</p>
     </section>

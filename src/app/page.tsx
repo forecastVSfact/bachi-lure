@@ -2,7 +2,7 @@
 import { HomeIntro } from "@/components/HomeIntro";
 import { JsonLd } from "@/components/JsonLd";
 import { LureCard } from "@/components/LureCard";
-import { getLatestColumns, getLures, getRecommendedLures, getTopStats } from "@/lib/data";
+import { getLatestColumns, getRecommendedLures, getTopStats } from "@/lib/data";
 import {
   buildHomeFaqJsonLd,
   buildOrganizationJsonLd,
@@ -19,10 +19,9 @@ export const metadata = createMetadata({
 });
 
 export default async function HomePage() {
-  const [stats, ranking, lures, columns] = await Promise.all([
+  const [stats, ranking, columns] = await Promise.all([
     getTopStats(),
     getRecommendedLures(5),
-    getLures(),
     getLatestColumns(3)
   ]);
 
@@ -105,7 +104,11 @@ export default async function HomePage() {
           <h2 className="section-title">ルアー一覧</h2>
           <Link href="/lures" className="text-sm text-[var(--teal)]">一覧へ</Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">{lures.slice(0, 9).map((lure) => <LureCard key={lure.id} lure={lure} />)}</div>
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {ranking.map((lure) => (
+            <LureCard key={lure.id} lure={lure} showCommentExcerpt />
+          ))}
+        </div>
       </section>
 
       <section className="order-4 md:order-5">
