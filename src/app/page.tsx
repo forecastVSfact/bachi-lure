@@ -97,7 +97,7 @@ export default async function HomePage() {
 
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="section-title">コラム</h2>
+          <h2 className="section-title">管理人コラム</h2>
           <Link href="/columns" className="text-sm text-[var(--teal)]">もっと見る →</Link>
         </div>
         <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

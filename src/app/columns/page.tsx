@@ -8,7 +8,7 @@ export default async function ColumnsPage({ searchParams }: { searchParams: Reco
 
   return (
     <div>
-      <h1 className="serif-title mb-6 text-3xl font-bold">コラム一覧</h1>
+      <h1 className="serif-title mb-6 text-3xl font-bold">管理人コラム一覧</h1>
       <div className="mb-6 flex flex-wrap gap-2">
         <Link href="/columns" className={`filter-tab ${category === "all" ? "active" : ""}`}>すべて</Link>
         {COLUMN_CATEGORY_LABELS.map((c) => (
