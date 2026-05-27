@@ -17,8 +17,8 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="space-y-12">
-      <section className="hero-element rounded bg-gradient-to-b from-[#020810] via-[#061220] to-[#0d2035] px-5 py-16 md:px-10">
+    <div className="space-y-6 md:space-y-10">
+      <section className="hero-element rounded bg-gradient-to-b from-[#020810] via-[#061220] to-[#0d2035] px-5 pb-6 pt-0 md:px-10 md:pb-10 md:pt-4">
         <p
           className="mb-4 text-[13px] uppercase text-[var(--water-light)]"
           style={{ fontFamily: "Bebas Neue, sans-serif", letterSpacing: "0.3em" }}
@@ -31,7 +31,7 @@ export default async function HomePage() {
         <p className="mt-5 text-[13px] text-[var(--muted)]">
           川バチ・港湾バチ・クルクルバチ・底バチ。管理人の実釣インプレ付き。
         </p>
-        <div className="mt-8 max-w-md rounded border border-[var(--border)] bg-black/10 p-4">
+        <div className="mt-5 max-w-md rounded border border-[var(--border)] bg-black/10 p-4 md:mt-8">
           <p className="text-[11px] text-[var(--muted)]">掲載ルアー数</p>
           <p className="mt-1 flex flex-wrap items-baseline gap-x-1 leading-tight">
             <span className="text-[28px] text-[var(--moon)]" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
@@ -61,8 +61,20 @@ export default async function HomePage() {
                 >
                   {idx + 1}
                 </p>
-                <div className="flex h-12 w-12 items-center justify-center rounded border border-[var(--border)] bg-[var(--water-mid)]">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#4a9aba" strokeWidth="1.5"/><circle cx="14" cy="11" r="1.2" fill="#4a9aba"/></svg>
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded border border-[var(--border)] bg-[var(--water-mid)] p-1">
+                  {lure.image_url ? (
+                    <img
+                      src={lure.image_url}
+                      alt={lure.name}
+                      className="max-h-full max-w-full object-contain"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+                      <path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#4a9aba" strokeWidth="1.5" />
+                      <circle cx="14" cy="11" r="1.2" fill="#4a9aba" />
+                    </svg>
+                  )}
                 </div>
                 <div className="flex-1">
                   <p className="serif-title text-base">{lure.name}</p>

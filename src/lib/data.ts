@@ -1,6 +1,16 @@
-﻿import { pickPrimaryImageUrl } from "@/lib/lure-image";
+﻿import { unstable_noStore as noStore } from "next/cache";
+import { pickPrimaryImageUrl } from "@/lib/lure-image";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import type { ColumnPost, Lure, LureImage } from "@/types/db";
+
+function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
 const LURE_SELECT = "*, lure_bachi_types(bachi_type), lure_images(id, external_url, storage_path, sort_order)";
 
@@ -35,15 +45,12 @@ export async function getTopStats() {
 }
 
 export async function getRecommendedLures(limit = 5) {
+  noStore();
   const supabase = createSupabaseServerClient();
-  const { data } = await supabase
-    .from("lures")
-    .select(LURE_SELECT)
-    .eq("rating", 5)
-    .order("updated_at", { ascending: false })
-    .limit(limit);
+  const { data } = await supabase.from("lures").select(LURE_SELECT).eq("rating", 5);
 
-  return ((data ?? []) as LureRowWithRelations[]).map(toLure);
+  const lures = ((data ?? []) as LureRowWithRelations[]).map(toLure);
+  return shuffle(lures).slice(0, limit);
 }
 
 export async function getLures(filters?: {

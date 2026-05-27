@@ -35,13 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${notoSansJp.variable} ${notoSerifJp.variable} ${bebasNeue.variable}`}>
         <header className="bg-transparent">
-          <div className="container-main py-4">
+          <div className="container-main py-3 md:py-4">
             <Link href="/" className="logo-text text-xs">
               bachi-lure.com
             </Link>
           </div>
         </header>
-        <main className="container-main py-8">{children}</main>
+        <main className="container-main pb-6 pt-0 md:py-8">{children}</main>
         <footer className="mt-12 border-t border-[var(--border)] bg-[#020810] px-4 py-8 text-center text-xs text-[var(--muted)]">
           <p className="logo-text mb-2 text-sm">bachi-lure.com</p>
           <p>© 2025 bachi-lure.com All Rights Reserved.</p>
