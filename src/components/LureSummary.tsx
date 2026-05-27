@@ -13,9 +13,11 @@ type LureSummaryProps = {
   lure: Lure;
   /** 詳細ページ用。複数画像があるときサムネイルを表示 */
   images?: LureImage[];
+  /** detail: PC向けに画像エリアをやや大きく */
+  size?: "card" | "detail";
 };
 
-export function LureSummary({ lure, images }: LureSummaryProps) {
+export function LureSummary({ lure, images, size = "card" }: LureSummaryProps) {
   const bachiTypeSet = new Set(lure.bachi_types);
   const orderedBachiTypes = BACHI_TYPES.filter((type) => bachiTypeSet.has(type));
   const rating = lure.rating ?? 0;
@@ -29,7 +31,11 @@ export function LureSummary({ lure, images }: LureSummaryProps) {
 
   return (
     <>
-      <div className="relative mb-4 h-40 overflow-hidden rounded-sm border border-[var(--border)] bg-[var(--water-mid)]">
+      <div
+        className={`relative mb-4 overflow-hidden rounded-sm border border-[var(--border)] bg-[var(--water-mid)] ${
+          size === "detail" ? "h-40 md:h-52 lg:h-56" : "h-40"
+        }`}
+      >
         <div className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-1rem)] flex-wrap gap-1 text-[10px]">
           {orderedBachiTypes.length ? (
             orderedBachiTypes.map((type) => (
