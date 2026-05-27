@@ -27,9 +27,9 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="space-y-6 md:space-y-10">
+    <div className="flex flex-col gap-6 md:gap-10">
       <JsonLd data={[buildWebSiteJsonLd(), buildOrganizationJsonLd(), buildHomeFaqJsonLd()]} />
-      <section className="hero-element rounded bg-gradient-to-b from-[#020810] via-[#061220] to-[#0d2035] px-5 pb-6 pt-0 md:px-10 md:pb-10 md:pt-4">
+      <section className="hero-element order-1 rounded bg-gradient-to-b from-[#020810] via-[#061220] to-[#0d2035] px-5 pb-6 pt-0 md:px-10 md:pb-10 md:pt-4">
         <p
           className="mb-4 text-[13px] uppercase text-[var(--water-light)]"
           style={{ fontFamily: "Bebas Neue, sans-serif", letterSpacing: "0.3em" }}
@@ -53,9 +53,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <HomeIntro />
+      <HomeIntro className="order-5 md:order-2" />
 
-      <section>
+      <section className="order-2 md:order-3">
         <h2 className="section-title mb-4">おすすめランキング</h2>
         <div className="space-y-3">
           {ranking.map((lure, idx) => (
@@ -100,7 +100,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section>
+      <section className="order-3 md:order-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="section-title">ルアー一覧</h2>
           <Link href="/lures" className="text-sm text-[var(--teal)]">一覧へ</Link>
@@ -108,7 +108,7 @@ export default async function HomePage() {
         <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">{lures.slice(0, 9).map((lure) => <LureCard key={lure.id} lure={lure} />)}</div>
       </section>
 
-      <section>
+      <section className="order-4 md:order-5">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="section-title">管理人コラム</h2>
           <Link href="/columns" className="text-sm text-[var(--teal)]">もっと見る →</Link>
@@ -124,7 +124,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="rounded bg-[var(--water-mid)] p-10 text-center">
+      <section className="order-6 rounded bg-[var(--water-mid)] p-10 text-center">
         <h2 className="serif-title text-lg">オヤビッチャ</h2>
         <p className="mt-1 text-[13px] text-[var(--muted)]">バチ抜け歴: 28年 / フィールド: 東京湾奥</p>
         <div className="mx-auto mt-4 max-w-xl border-l-[3px] border-[var(--teal)] bg-black/10 p-3 text-left text-[13px] text-[var(--paper)]">

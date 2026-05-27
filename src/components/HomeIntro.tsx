@@ -1,8 +1,10 @@
 import Link from "next/link";
 
-export function HomeIntro() {
+export function HomeIntro({ className }: { className?: string }) {
   return (
-    <section className="rounded border border-[var(--border)] bg-[var(--water-mid)]/40 px-5 py-6 md:px-8 md:py-8">
+    <section
+      className={`rounded border border-[var(--border)] bg-[var(--water-mid)]/40 px-5 py-6 md:px-8 md:py-8${className ? ` ${className}` : ""}`}
+    >
       <h2 className="serif-title mb-4 text-xl font-bold text-[var(--moon)]">バチ抜けルアー地獄とは</h2>
       <div className="space-y-4 text-[13px] leading-[1.9] text-[var(--paper)]">
         <p>
