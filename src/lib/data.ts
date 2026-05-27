@@ -95,24 +95,41 @@ export async function getLureImages(lureId: string) {
   return (data ?? []) as LureImage[];
 }
 
-export async function getRelatedLures(lureId: string, bachiTypes: string[]) {
+function countBachiOverlap(candidateTypes: string[], currentTypes: string[]): number {
+  const current = new Set(currentTypes);
+  return candidateTypes.filter((type) => current.has(type)).length;
+}
+
+function sizeDistanceMm(base: number | null, candidate: number | null): number {
+  if (base == null || candidate == null) return Number.MAX_SAFE_INTEGER;
+  return Math.abs(base - candidate);
+}
+
+/** バチ種別が1つ以上一致するルアー。一致数が多い順→サイズが近い順で最大3件 */
+export async function getRelatedLures(lureId: string, bachiTypes: string[], sizeMm: number | null) {
   const supabase = createSupabaseServerClient();
   if (!bachiTypes.length) return [];
+
   const { data: relationRows } = await supabase
     .from("lure_bachi_types")
     .select("lure_id")
     .in("bachi_type", bachiTypes)
     .neq("lure_id", lureId);
+
   const lureIds = Array.from(new Set((relationRows ?? []).map((row) => row.lure_id)));
   if (!lureIds.length) return [];
-  const { data } = await supabase
-    .from("lures")
-    .select(LURE_SELECT)
-    .in("id", lureIds)
-    .neq("id", lureId)
-    .limit(3);
 
-  return ((data ?? []) as LureRowWithRelations[]).map(toLure);
+  const { data } = await supabase.from("lures").select(LURE_SELECT).in("id", lureIds).neq("id", lureId);
+
+  const candidates = ((data ?? []) as LureRowWithRelations[]).map(toLure);
+
+  return candidates
+    .sort((a, b) => {
+      const overlapDiff = countBachiOverlap(b.bachi_types, bachiTypes) - countBachiOverlap(a.bachi_types, bachiTypes);
+      if (overlapDiff !== 0) return overlapDiff;
+      return sizeDistanceMm(sizeMm, a.size_mm) - sizeDistanceMm(sizeMm, b.size_mm);
+    })
+    .slice(0, 3);
 }
 
 export async function getLatestColumns(limit = 3) {

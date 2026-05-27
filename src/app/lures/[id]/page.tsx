@@ -20,7 +20,10 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 export default async function LureDetailPage({ params }: { params: { id: string } }) {
   const lure = await getLureById(params.id);
   if (!lure) notFound();
-  const [images, related] = await Promise.all([getLureImages(lure.id), getRelatedLures(lure.id, lure.bachi_types)]);
+  const [images, related] = await Promise.all([
+    getLureImages(lure.id),
+    getRelatedLures(lure.id, lure.bachi_types, lure.size_mm)
+  ]);
 
   return (
     <div className="space-y-8">
