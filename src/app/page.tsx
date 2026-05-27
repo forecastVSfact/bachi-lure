@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import { ColumnCard } from "@/components/ColumnCard";
 import { HomeIntro } from "@/components/HomeIntro";
 import { JsonLd } from "@/components/JsonLd";
 import { LureCard } from "@/components/LureCard";
@@ -112,17 +113,15 @@ export default async function HomePage() {
       </section>
 
       <section className="order-4 md:order-5">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="section-title">管理人コラム</h2>
-          <Link href="/columns" className="text-sm text-[var(--teal)]">もっと見る →</Link>
+          <Link href="/columns" className="shrink-0 text-sm text-[var(--teal)] underline-offset-2 hover:underline">
+            コラム一覧へ →
+          </Link>
         </div>
         <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {columns.map((col) => (
-            <Link key={col.id} href={`/columns/${col.id}`} className="lure-card block p-4">
-              <p className="mb-2 inline-block rounded px-2 py-1 text-[10px] badge-bachi">{col.category}</p>
-              <h3 className="serif-title text-sm">{col.title}</h3>
-              <p className="mt-2 text-[11px] text-[var(--muted)]">{col.published_at?.slice(0, 10)}</p>
-            </Link>
+            <ColumnCard key={col.id} column={col} showExcerpt titleTag="h3" />
           ))}
         </div>
       </section>

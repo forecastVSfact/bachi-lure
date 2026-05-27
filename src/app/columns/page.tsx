@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import { ColumnCard } from "@/components/ColumnCard";
 import { JsonLd } from "@/components/JsonLd";
 import { COLUMN_CATEGORY_LABELS } from "@/lib/constants";
 import { getColumns } from "@/lib/data";
@@ -36,11 +37,7 @@ export default async function ColumnsPage({ searchParams }: { searchParams: Reco
       </div>
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {columns.map((col) => (
-          <Link key={col.id} href={`/columns/${col.id}`} className="lure-card block p-4">
-            <p className="mb-2 inline-block rounded px-2 py-1 text-[10px] badge-bachi">{col.category}</p>
-            <h2 className="serif-title text-base">{col.title}</h2>
-            <p className="mt-2 text-[11px] text-[var(--muted)]">{col.published_at?.slice(0, 10)}</p>
-          </Link>
+          <ColumnCard key={col.id} column={col} showExcerpt titleTag="h2" />
         ))}
       </div>
     </div>

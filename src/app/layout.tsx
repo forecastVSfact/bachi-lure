@@ -55,10 +55,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${notoSansJp.variable} ${notoSerifJp.variable} ${bebasNeue.variable}`}>
         <header className="bg-transparent">
-          <div className="container-main py-3 md:py-4">
+          <div className="container-main flex items-center justify-between py-3 md:py-4">
             <Link href="/" className="logo-text text-xs">
               bachi-lure.com
             </Link>
+            <nav className="flex items-center gap-4 text-[12px]">
+              <Link href="/lures" className="text-[var(--muted)] hover:text-[var(--teal)]">
+                ルアー一覧
+              </Link>
+              <Link href="/columns" className="text-[var(--muted)] hover:text-[var(--teal)]">
+                コラム
+              </Link>
+            </nav>
           </div>
         </header>
         <main className="container-main pb-6 pt-0 md:py-8">{children}</main>
