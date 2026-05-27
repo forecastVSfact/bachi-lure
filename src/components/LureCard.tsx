@@ -1,12 +1,16 @@
 ﻿import Link from "next/link";
-import { BACHI_TYPE_LABEL, CASTING_DISTANCE_LABEL, LURE_TYPE_LABEL, SPEED_RANGE_LABEL } from "@/lib/constants";
+import {
+  BACHI_TYPE_LABEL,
+  CASTING_DISTANCE_LABEL,
+  LURE_TYPE_LABEL,
+  formatDepthRange,
+  formatSpeedRangeDisplay
+} from "@/lib/constants";
 import type { Lure } from "@/types/db";
 
 export function LureCard({ lure }: { lure: Lure }) {
-  const min = lure.range_min_cm ?? 0;
-  const max = lure.range_max_cm ?? 0;
-  const width = Math.max(max - min, 2);
   const primaryBachiType = lure.bachi_types[0];
+  const rating = lure.rating ?? 0;
 
   return (
     <Link href={`/lures/${lure.id}`} className="lure-card relative block overflow-hidden p-4">
@@ -40,15 +44,6 @@ export function LureCard({ lure }: { lure: Lure }) {
       <h3 className="serif-title text-base font-bold">{lure.name}</h3>
       <p className="mb-3 text-xs text-[var(--muted)]">{lure.maker}</p>
 
-      <div className="mb-3">
-        <div className="h-1.5 rounded-full bg-white/10">
-          <div
-            className="h-1.5 rounded-full bg-[var(--teal)]"
-            style={{ marginLeft: `${min}%`, width: `${width}%` }}
-          />
-        </div>
-      </div>
-
       <div className="grid grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <p className="text-[10px] text-[var(--muted)]">サイズ</p>
@@ -57,6 +52,10 @@ export function LureCard({ lure }: { lure: Lure }) {
         <div>
           <p className="text-[10px] text-[var(--muted)]">ウェイト</p>
           <p className="text-xs text-[var(--paper)]">{lure.weight_g ?? "-"}g</p>
+        </div>
+        <div>
+          <p className="text-[10px] text-[var(--muted)]">レンジ（水深）</p>
+          <p className="text-xs text-[var(--paper)]">{formatDepthRange(lure.range_min_cm, lure.range_max_cm)}</p>
         </div>
         <div>
           <p className="text-[10px] text-[var(--muted)]">アクション</p>
@@ -68,17 +67,28 @@ export function LureCard({ lure }: { lure: Lure }) {
         </div>
         <div>
           <p className="text-[10px] text-[var(--muted)]">速度域</p>
-          <p className="text-xs text-[var(--paper)]">{SPEED_RANGE_LABEL[lure.speed_range] ?? lure.speed_range}</p>
+          <p className="text-xs leading-snug text-[var(--paper)]">{formatSpeedRangeDisplay(lure.speed_range)}</p>
         </div>
       </div>
 
       <div className="my-3 h-px bg-[var(--border)]" />
-      <div className="flex items-center justify-between text-xs">
-        <p className="tracking-wider text-[var(--amber)]">{`${"★".repeat(lure.rating ?? 0)}${"☆".repeat(5 - (lure.rating ?? 0))}`}</p>
-        <p className="text-[var(--moon)]">{lure.price_yen ? `¥${lure.price_yen.toLocaleString()}` : "価格未設定"}</p>
+
+      <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+        <div>
+          <p className="text-[10px] text-[var(--muted)]">管理人評価</p>
+          <p className="tracking-wider text-[var(--amber)]">{`${"★".repeat(rating)}${"☆".repeat(5 - rating)}`}</p>
+        </div>
+        <div>
+          <p className="text-[10px] text-[var(--muted)]">飛距離</p>
+          <p className="text-[var(--paper)]">
+            {CASTING_DISTANCE_LABEL[lure.casting_distance] ?? lure.casting_distance}
+          </p>
+        </div>
+        <div className="col-span-2">
+          <p className="text-[10px] text-[var(--muted)]">価格</p>
+          <p className="text-[var(--moon)]">{lure.price_yen ? `¥${lure.price_yen.toLocaleString()}` : "価格未設定"}</p>
+        </div>
       </div>
-      <p className="mt-1 text-[10px] text-[var(--muted)]">{CASTING_DISTANCE_LABEL[lure.casting_distance] ?? lure.casting_distance}</p>
     </Link>
   );
 }
-

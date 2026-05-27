@@ -21,8 +21,8 @@ function normalizeSpeedRange(raw: string | undefined): string {
     if (CANONICAL_SPEED.has(key)) canonical.add(key);
   }
   if (canonical.size === 0) return "all";
-  if (canonical.size === 1) return Array.from(canonical)[0];
-  return "all";
+  const order = ["dead_slow", "slow", "medium", "all"];
+  return order.filter((key) => canonical.has(key)).join(",");
 }
 
 async function main() {

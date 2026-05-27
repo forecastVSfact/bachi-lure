@@ -43,9 +43,8 @@ def normalize_speed_range(raw) -> str:
             canonical.add(key)
     if not canonical:
         return "all"
-    if len(canonical) == 1:
-        return next(iter(canonical))
-    return "all"
+    order = ["dead_slow", "slow", "medium", "all"]
+    return ",".join(key for key in order if key in canonical)
 
 
 def _format_rating(raw) -> str:
@@ -135,30 +134,32 @@ def main() -> None:
         def cell(name: str):
             return row[index[name]] if name in index else None
 
-        rows_out.append(
-            {
-                "name": str(cell("name")).strip(),
-                "maker": str(cell("maker")).strip(),
-                "size_mm": "" if cell("size_mm") is None else str(cell("size_mm")),
-                "weight_g": "" if cell("weight_g") is None else str(cell("weight_g")),
-                "price_yen": "" if cell("price_yen") is None else str(int(cell("price_yen"))),
-                "hook_size": "" if cell("hook_size") is None else str(cell("hook_size")),
-                "lure_type": str(cell("lure_type")).strip(),
-                "range_min_cm": "" if cell("range_min_cm") is None else str(cell("range_min_cm")),
-                "range_max_cm": "" if cell("range_max_cm") is None else str(cell("range_max_cm")),
-                "swim_posture": str(cell("swim_posture")).strip(),
-                "action": "" if cell("action") is None else str(cell("action")).strip(),
-                "speed_range": normalize_speed_range(cell("speed_range")),
-                "casting_distance": str(cell("casting_distance")).strip(),
-                "bachi_types": normalize_bachi_types(cell("bachi_types")),
-                "youtube_url": "" if not cell("youtube_url") else str(cell("youtube_url")).strip(),
-                "amazon_url": "" if not cell("amazon_url") else str(cell("amazon_url")).strip(),
-                "rakuten_url": "" if not cell("rakuten_url") else str(cell("rakuten_url")).strip(),
-                "rating": _format_rating(cell("rating")),
-                "image_urls": _format_image_urls(cell("image_urls") if "image_urls" in index else cell("image_url") if "image_url" in index else None),
-                "comment": "" if not cell("comment") else str(cell("comment")).strip(),
-            }
-        )
+        row_out: dict[str, str] = {
+            "name": str(cell("name")).strip(),
+            "maker": str(cell("maker")).strip(),
+            "size_mm": "" if cell("size_mm") is None else str(cell("size_mm")),
+            "weight_g": "" if cell("weight_g") is None else str(cell("weight_g")),
+            "price_yen": "" if cell("price_yen") is None else str(int(cell("price_yen"))),
+            "hook_size": "" if cell("hook_size") is None else str(cell("hook_size")),
+            "lure_type": str(cell("lure_type")).strip(),
+            "range_min_cm": "" if cell("range_min_cm") is None else str(cell("range_min_cm")),
+            "range_max_cm": "" if cell("range_max_cm") is None else str(cell("range_max_cm")),
+            "swim_posture": str(cell("swim_posture")).strip(),
+            "action": "" if cell("action") is None else str(cell("action")).strip(),
+            "speed_range": normalize_speed_range(cell("speed_range")),
+            "casting_distance": str(cell("casting_distance")).strip(),
+            "bachi_types": normalize_bachi_types(cell("bachi_types")),
+            "youtube_url": "" if not cell("youtube_url") else str(cell("youtube_url")).strip(),
+            "amazon_url": "" if not cell("amazon_url") else str(cell("amazon_url")).strip(),
+            "rakuten_url": "" if not cell("rakuten_url") else str(cell("rakuten_url")).strip(),
+            "rating": _format_rating(cell("rating")),
+            "comment": "" if not cell("comment") else str(cell("comment")).strip(),
+        }
+        if "image_urls" in columns:
+            row_out["image_urls"] = _format_image_urls(
+                cell("image_urls") if "image_urls" in index else cell("image_url") if "image_url" in index else None
+            )
+        rows_out.append(row_out)
 
     wb.close()
 

@@ -70,7 +70,10 @@ export async function getLures(filters?: {
     query = query.in("id", lureIds);
   }
   if (filters?.type && filters.type !== "all") query = query.eq("lure_type", filters.type);
-  if (filters?.speed && filters.speed !== "all") query = query.eq("speed_range", filters.speed);
+  if (filters?.speed && filters.speed !== "all") {
+    const speed = filters.speed;
+    query = query.or(`speed_range.eq.${speed},speed_range.eq.all,speed_range.ilike.%${speed}%`);
+  }
   if (filters?.casting && filters.casting !== "all") query = query.eq("casting_distance", filters.casting);
   if (filters?.q) query = query.or(`name.ilike.%${filters.q}%,maker.ilike.%${filters.q}%`);
 

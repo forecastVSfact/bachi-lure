@@ -14,6 +14,34 @@ export const SPEED_RANGE_LABEL: Record<string, string> = {
   all: "速度問わず"
 };
 
+const SPEED_RANGE_ORDER = ["dead_slow", "slow", "medium", "all"] as const;
+
+export function formatDepthRange(minCm: number | null, maxCm: number | null): string {
+  if (minCm == null && maxCm == null) return "-";
+  if (minCm != null && maxCm != null) return `${minCm}〜${maxCm}cm`;
+  if (maxCm != null) return `〜${maxCm}cm`;
+  if (minCm != null) return `${minCm}cm〜`;
+  return "-";
+}
+
+/** speed_range は単一キーまたは dead_slow,slow のようなカンマ区切り */
+export function formatSpeedRangeDisplay(speedRange: string | null | undefined): string {
+  if (!speedRange?.trim()) return "-";
+  const raw = speedRange.trim().toLowerCase();
+  if (raw === "all") return SPEED_RANGE_LABEL.all;
+
+  const parts = raw
+    .split(/[,、]/)
+    .map((part) => part.trim().replace(/-/g, "_"))
+    .filter(Boolean);
+
+  const unique = new Set(parts);
+  const ordered = SPEED_RANGE_ORDER.filter((key) => unique.has(key));
+  const labels = (ordered.length ? ordered : parts).map((key) => SPEED_RANGE_LABEL[key] ?? key);
+
+  return labels.length ? labels.join("・") : SPEED_RANGE_LABEL[raw] ?? speedRange;
+}
+
 export const LURE_TYPE_LABEL: Record<string, string> = {
   floating: "フローティング",
   sinking: "シンキング"
