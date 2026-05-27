@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase.from("columns").select("id,updated_at")
   ]);
 
-  const base = "https://bachi-lure.com";
+  const base = "https://www.bachi-lure.com";
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${base}/`, lastModified: new Date() },
     { url: `${base}/lures`, lastModified: new Date() },

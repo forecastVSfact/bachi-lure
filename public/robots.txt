@@ -18,5 +18,5 @@ Disallow: /
 
 User-agent: *
 Allow: /
-Sitemap: https://bachi-lure.com/sitemap.xml
+Sitemap: https://www.bachi-lure.com/sitemap.xml
 
