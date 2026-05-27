@@ -6,6 +6,7 @@ import { LureSummary } from "@/components/LureSummary";
 import {
   BACHI_TYPE_LABEL,
   CASTING_DISTANCE_LABEL,
+  formatDepthRange,
   formatSpeedRangeDisplay,
   LURE_TYPE_LABEL
 } from "@/lib/constants";
@@ -84,8 +85,6 @@ export default async function LureDetailPage({ params }: { params: { id: string 
     getRelatedLures(lure.id, lure.bachi_types, lure.size_mm)
   ]);
 
-  const min = lure.range_min_cm ?? 0;
-  const max = lure.range_max_cm ?? 0;
   const rating = lure.rating ?? 0;
 
   return (
@@ -107,7 +106,7 @@ export default async function LureDetailPage({ params }: { params: { id: string 
         <YoutubeSection lure={lure} />
       </div>
 
-      {/* PC: 以前のギャラリー + SPEC + RANGE レイアウト */}
+      {/* PC: ギャラリー + SPEC レイアウト */}
       <div className="hidden space-y-8 lg:block">
         <div className="grid gap-6 lg:grid-cols-5">
           <div className="lg:col-span-3">
@@ -146,6 +145,10 @@ export default async function LureDetailPage({ params }: { params: { id: string 
               <p className="text-[15px] text-[var(--moon)]">{lure.weight_g ?? "-"}g</p>
             </div>
             <div className="lure-card p-3">
+              <p className="text-[10px] text-[var(--muted)]">レンジ（水深）</p>
+              <p className="text-[15px] text-[var(--moon)]">{formatDepthRange(lure.range_min_cm, lure.range_max_cm)}</p>
+            </div>
+            <div className="lure-card p-3">
               <p className="text-[10px] text-[var(--muted)]">フック</p>
               <p className="text-[15px] text-[var(--moon)]">{lure.hook_size ?? "-"}</p>
             </div>
@@ -167,20 +170,6 @@ export default async function LureDetailPage({ params }: { params: { id: string 
                 {CASTING_DISTANCE_LABEL[lure.casting_distance] ?? lure.casting_distance}
               </p>
             </div>
-          </div>
-        </section>
-
-        <section className="space-y-2">
-          <h2 className="border-b border-[var(--border)] pb-2 text-xs tracking-[0.1em] text-[var(--muted)]">RANGE</h2>
-          <div className="h-1.5 rounded-full bg-white/5">
-            <div
-              className="h-1.5 rounded-full bg-[var(--teal)]"
-              style={{ marginLeft: `${min}%`, width: `${Math.max(max - min, 2)}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-[var(--muted)]">
-            <span>0cm</span>
-            <span>100cm</span>
           </div>
         </section>
 
