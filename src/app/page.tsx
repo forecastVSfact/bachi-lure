@@ -11,7 +11,7 @@ import {
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
-  title: "バチ抜けルアー図鑑 | シーバスバチ抜け特化データベース",
+  title: "バチ抜けルアー地獄 | シーバスバチ抜け特化データベース",
   description:
     "川バチ・港湾バチ・クルクルバチ・底バチ。シーバスのバチ抜けに効くルアーを管理人の実釣インプレ付きで掲載。バチ抜けルアー選び・おすすめ比較に。",
   path: "/",

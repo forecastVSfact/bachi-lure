@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const SITE_URL = "https://www.bachi-lure.com";
-export const SITE_NAME = "バチ抜けルアー図鑑";
+export const SITE_NAME = "バチ抜けルアー地獄";
 
 export const DEFAULT_DESCRIPTION =
   "川バチ・港湾バチ・クルクルバチ・底バチ。シーバスのバチ抜けに効くルアーを管理人の実釣インプレ付きで掲載。";
