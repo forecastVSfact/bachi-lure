@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/JsonLd";
 import { LureCard } from "@/components/LureCard";
 import { LureGallery } from "@/components/LureGallery";
 import { LureSummary } from "@/components/LureSummary";
@@ -11,6 +12,7 @@ import {
   LURE_TYPE_LABEL
 } from "@/lib/constants";
 import type { Lure } from "@/types/db";
+import { buildBreadcrumbJsonLd, buildLureProductJsonLd } from "@/lib/json-ld";
 import { getLureById, getLureImages, getRelatedLures } from "@/lib/data";
 import { createMetadata } from "@/lib/seo";
 
@@ -94,6 +96,16 @@ export default async function LureDetailPage({ params }: { params: { id: string 
 
   return (
     <div className="space-y-8">
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "トップ", path: "/" },
+            { name: "ルアー一覧", path: "/lures" },
+            { name: lure.name, path: `/lures/${lure.id}` }
+          ]),
+          buildLureProductJsonLd(lure)
+        ]}
+      />
       <div className="text-[11px] text-[var(--muted)]">
         <Link href="/">トップ</Link> › <Link href="/lures">ルアー一覧</Link> › <span className="text-[var(--paper)]">{lure.name}</span>
       </div>

@@ -1,6 +1,13 @@
 ﻿import Link from "next/link";
+import { HomeIntro } from "@/components/HomeIntro";
+import { JsonLd } from "@/components/JsonLd";
 import { LureCard } from "@/components/LureCard";
 import { getLatestColumns, getLures, getRecommendedLures, getTopStats } from "@/lib/data";
+import {
+  buildHomeFaqJsonLd,
+  buildOrganizationJsonLd,
+  buildWebSiteJsonLd
+} from "@/lib/json-ld";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
@@ -21,6 +28,7 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-6 md:space-y-10">
+      <JsonLd data={[buildWebSiteJsonLd(), buildOrganizationJsonLd(), buildHomeFaqJsonLd()]} />
       <section className="hero-element rounded bg-gradient-to-b from-[#020810] via-[#061220] to-[#0d2035] px-5 pb-6 pt-0 md:px-10 md:pb-10 md:pt-4">
         <p
           className="mb-4 text-[13px] uppercase text-[var(--water-light)]"
@@ -44,6 +52,8 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
+
+      <HomeIntro />
 
       <section>
         <h2 className="section-title mb-4">おすすめランキング</h2>

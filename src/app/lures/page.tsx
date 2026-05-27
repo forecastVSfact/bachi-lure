@@ -1,6 +1,8 @@
-﻿import { LureCard } from "@/components/LureCard";
+﻿import { JsonLd } from "@/components/JsonLd";
+import { LureCard } from "@/components/LureCard";
 import { LureFilters } from "@/components/LureFilters";
 import { getLures } from "@/lib/data";
+import { buildBreadcrumbJsonLd, buildLureCollectionJsonLd } from "@/lib/json-ld";
 import { createMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +25,15 @@ export default async function LuresPage({ searchParams }: { searchParams: Record
 
   return (
     <div>
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "トップ", path: "/" },
+            { name: "ルアー一覧", path: "/lures" }
+          ]),
+          buildLureCollectionJsonLd(lures)
+        ]}
+      />
       <h1 className="serif-title mb-6 text-3xl font-bold">ルアー一覧</h1>
       <LureFilters />
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

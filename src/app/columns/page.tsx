@@ -1,6 +1,8 @@
 ﻿import Link from "next/link";
+import { JsonLd } from "@/components/JsonLd";
 import { COLUMN_CATEGORY_LABELS } from "@/lib/constants";
 import { getColumns } from "@/lib/data";
+import { buildBreadcrumbJsonLd, buildColumnCollectionJsonLd } from "@/lib/json-ld";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
@@ -16,6 +18,15 @@ export default async function ColumnsPage({ searchParams }: { searchParams: Reco
 
   return (
     <div>
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "トップ", path: "/" },
+            { name: "管理人コラム", path: "/columns" }
+          ]),
+          buildColumnCollectionJsonLd()
+        ]}
+      />
       <h1 className="serif-title mb-6 text-3xl font-bold">管理人コラム一覧</h1>
       <div className="mb-6 flex flex-wrap gap-2">
         <Link href="/columns" className={`filter-tab ${category === "all" ? "active" : ""}`}>すべて</Link>
