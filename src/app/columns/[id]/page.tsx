@@ -1,14 +1,18 @@
 ﻿import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { getColumnById } from "@/lib/data";
+import { createMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const column = await getColumnById(params.id);
   if (!column) return {};
-  return {
-    title: `${column.title} | バチ抜けルアー図鑑`,
-    description: column.body.slice(0, 100)
-  };
+  const description = column.body.replace(/\s+/g, " ").trim().slice(0, 120);
+
+  return createMetadata({
+    title: column.title,
+    description: description || `${column.category}に関する管理人コラム。`,
+    path: `/columns/${column.id}`
+  });
 }
 
 export default async function ColumnDetailPage({ params }: { params: { id: string } }) {

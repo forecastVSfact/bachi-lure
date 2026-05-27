@@ -12,6 +12,7 @@ import {
 } from "@/lib/constants";
 import type { Lure } from "@/types/db";
 import { getLureById, getLureImages, getRelatedLures } from "@/lib/data";
+import { createMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const lure = await getLureById(params.id);
@@ -19,10 +20,14 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   const bachiTypeLabel = lure.bachi_types.length
     ? lure.bachi_types.map((type) => BACHI_TYPE_LABEL[type] ?? type).join("・")
     : "未設定";
-  return {
-    title: `${lure.name}（${lure.maker}）| バチ抜けルアー図鑑`,
-    description: `${lure.name}のバチ抜けインプレ。レンジ${lure.range_min_cm ?? "-"}?${lure.range_max_cm ?? "-"}cm、${bachiTypeLabel}対応。管理人おすすめ度★${lure.rating ?? "-"}。`
-  };
+  const depth = formatDepthRange(lure.range_min_cm, lure.range_max_cm);
+
+  return createMetadata({
+    title: `${lure.name}（${lure.maker}）`,
+    description: `${lure.name}のバチ抜けインプレ。レンジ${depth}、${bachiTypeLabel}対応。管理人おすすめ度★${lure.rating ?? "-"}。`,
+    path: `/lures/${lure.id}`,
+    imageUrl: lure.image_url
+  });
 }
 
 function AffiliateButtons({ lure }: { lure: Lure }) {

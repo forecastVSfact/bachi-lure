@@ -1,6 +1,14 @@
 ﻿import Link from "next/link";
 import { COLUMN_CATEGORY_LABELS } from "@/lib/constants";
 import { getColumns } from "@/lib/data";
+import { createMetadata } from "@/lib/seo";
+
+export const metadata = createMetadata({
+  title: "管理人コラム一覧",
+  description:
+    "バチ抜け・シーバス釣りの管理人コラム。テクニック、タックル、エリアガイドなど実釣ベースの記事一覧。",
+  path: "/columns"
+});
 
 export default async function ColumnsPage({ searchParams }: { searchParams: Record<string, string | undefined> }) {
   const category = searchParams.category ?? "all";
