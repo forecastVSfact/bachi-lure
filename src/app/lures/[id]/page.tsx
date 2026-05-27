@@ -2,7 +2,12 @@
 import { notFound } from "next/navigation";
 import { LureCard } from "@/components/LureCard";
 import { LureGallery } from "@/components/LureGallery";
-import { BACHI_TYPE_LABEL, LURE_TYPE_LABEL } from "@/lib/constants";
+import {
+  BACHI_TYPE_LABEL,
+  CASTING_DISTANCE_LABEL,
+  formatSpeedRangeDisplay,
+  LURE_TYPE_LABEL
+} from "@/lib/constants";
 import { getLureById, getLureImages, getRelatedLures } from "@/lib/data";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -72,8 +77,16 @@ export default async function LureDetailPage({ params }: { params: { id: string 
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">フック</p><p className="text-[15px] text-[var(--moon)]">{lure.hook_size ?? "-"}</p></div>
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">アクション</p><p className="text-[15px] text-[var(--moon)]">{lure.action ?? "-"}</p></div>
           <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">泳ぎ姿勢</p><p className="text-[15px] text-[var(--moon)]">{lure.swim_posture}</p></div>
-          <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">速度域</p><p className="text-[15px] text-[var(--moon)]">{lure.speed_range}</p></div>
-          <div className="lure-card p-3"><p className="text-[10px] text-[var(--muted)]">飛距離</p><p className="text-[15px] text-[var(--moon)]">{lure.casting_distance}</p></div>
+          <div className="lure-card p-3">
+            <p className="text-[10px] text-[var(--muted)]">速度域</p>
+            <p className="text-[15px] text-[var(--moon)]">{formatSpeedRangeDisplay(lure.speed_range)}</p>
+          </div>
+          <div className="lure-card p-3">
+            <p className="text-[10px] text-[var(--muted)]">飛距離</p>
+            <p className="text-[15px] text-[var(--moon)]">
+              {CASTING_DISTANCE_LABEL[lure.casting_distance] ?? lure.casting_distance}
+            </p>
+          </div>
         </div>
       </section>
 

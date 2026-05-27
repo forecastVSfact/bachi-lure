@@ -11,10 +11,11 @@ export const SPEED_RANGE_LABEL: Record<string, string> = {
   dead_slow: "デッドスロー",
   slow: "スロー",
   medium: "ミディアム",
+  fast: "ファスト",
   all: "速度問わず"
 };
 
-const SPEED_RANGE_ORDER = ["dead_slow", "slow", "medium", "all"] as const;
+const SPEED_RANGE_ORDER = ["dead_slow", "slow", "medium", "fast", "all"] as const;
 
 export function formatDepthRange(minCm: number | null, maxCm: number | null): string {
   if (minCm == null && maxCm == null) return "-";
@@ -24,22 +25,33 @@ export function formatDepthRange(minCm: number | null, maxCm: number | null): st
   return "-";
 }
 
-/** speed_range は単一キーまたは dead_slow,slow のようなカンマ区切り */
-export function formatSpeedRangeDisplay(speedRange: string | null | undefined): string {
-  if (!speedRange?.trim()) return "-";
-  const raw = speedRange.trim().toLowerCase();
-  if (raw === "all") return SPEED_RANGE_LABEL.all;
+function normalizeSpeedToken(part: string): string {
+  let key = part.trim().toLowerCase().replace(/-/g, "_");
+  if (key === "deadslow") key = "dead_slow";
+  return key;
+}
 
-  const parts = raw
+/** speed_range は単一キーまたは dead_slow,slow のようなカンマ区切り */
+export function formatSpeedRangeParts(speedRange: string | null | undefined): string[] {
+  if (!speedRange?.trim()) return ["-"];
+  const raw = speedRange.trim().toLowerCase();
+  if (raw === "all") return [SPEED_RANGE_LABEL.all];
+
+  const tokens = raw
     .split(/[,、]/)
-    .map((part) => part.trim().replace(/-/g, "_"))
+    .map(normalizeSpeedToken)
     .filter(Boolean);
 
-  const unique = new Set(parts);
+  const unique = new Set(tokens);
   const ordered = SPEED_RANGE_ORDER.filter((key) => unique.has(key));
-  const labels = (ordered.length ? ordered : parts).map((key) => SPEED_RANGE_LABEL[key] ?? key);
+  const keys = ordered.length ? ordered : tokens;
+  const labels = keys.map((key) => SPEED_RANGE_LABEL[key] ?? key);
 
-  return labels.length ? labels.join("・") : SPEED_RANGE_LABEL[raw] ?? speedRange;
+  return labels.length ? labels : [SPEED_RANGE_LABEL[raw] ?? speedRange];
+}
+
+export function formatSpeedRangeDisplay(speedRange: string | null | undefined): string {
+  return formatSpeedRangeParts(speedRange).join("、");
 }
 
 export const LURE_TYPE_LABEL: Record<string, string> = {

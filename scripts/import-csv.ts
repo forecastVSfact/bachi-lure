@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 type CsvRow = Record<string, string>;
 
-const CANONICAL_SPEED = new Set(["dead_slow", "slow", "medium", "all"]);
+const CANONICAL_SPEED = new Set(["dead_slow", "slow", "medium", "fast", "all"]);
 
 function lureKey(name: string, maker: string): string {
   return `${name}|||${maker}`.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
@@ -17,11 +17,11 @@ function normalizeSpeedRange(raw: string | undefined): string {
   for (const part of parts) {
     let key = part;
     if (key === "deadslow") key = "dead_slow";
-    if (key === "fast" || key === "medium_fast") key = "medium";
+    if (key === "medium_fast") key = "medium";
     if (CANONICAL_SPEED.has(key)) canonical.add(key);
   }
   if (canonical.size === 0) return "all";
-  const order = ["dead_slow", "slow", "medium", "all"];
+  const order = ["dead_slow", "slow", "medium", "fast", "all"];
   return order.filter((key) => canonical.has(key)).join(",");
 }
 

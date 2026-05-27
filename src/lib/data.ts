@@ -60,6 +60,7 @@ export async function getLures(filters?: {
   casting?: string;
   q?: string;
 }) {
+  noStore();
   const supabase = createSupabaseServerClient();
   let query = supabase.from("lures").select(LURE_SELECT).order("updated_at", { ascending: false });
 
@@ -82,6 +83,7 @@ export async function getLures(filters?: {
 }
 
 export async function getLureById(id: string) {
+  noStore();
   const supabase = createSupabaseServerClient();
   const { data } = await supabase.from("lures").select(LURE_SELECT).eq("id", id).single();
   return data ? toLure(data as LureRowWithRelations) : null;

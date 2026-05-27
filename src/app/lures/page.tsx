@@ -2,6 +2,8 @@
 import { LureFilters } from "@/components/LureFilters";
 import { getLures } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export default async function LuresPage({ searchParams }: { searchParams: Record<string, string | undefined> }) {
   const lures = await getLures({
     bachi: searchParams.bachi,

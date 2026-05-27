@@ -11,7 +11,7 @@ from pathlib import Path
 
 import openpyxl
 
-CANONICAL_SPEED = frozenset({"dead_slow", "slow", "medium", "all"})
+CANONICAL_SPEED = frozenset({"dead_slow", "slow", "medium", "fast", "all"})
 CANONICAL_BACHI = frozenset({"river", "harbor", "kurukuru", "bottom"})
 BACHI_ALIASES = {
     "harbor_drift": "harbor",
@@ -37,13 +37,13 @@ def normalize_speed_range(raw) -> str:
         key = part.lower().replace("-", "_")
         if key == "deadslow":
             key = "dead_slow"
-        elif key in ("fast", "medium_fast"):
+        elif key == "medium_fast":
             key = "medium"
         if key in CANONICAL_SPEED:
             canonical.add(key)
     if not canonical:
         return "all"
-    order = ["dead_slow", "slow", "medium", "all"]
+    order = ["dead_slow", "slow", "medium", "fast", "all"]
     return ",".join(key for key in order if key in canonical)
 
 

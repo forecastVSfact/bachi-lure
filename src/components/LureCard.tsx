@@ -4,13 +4,14 @@ import {
   CASTING_DISTANCE_LABEL,
   LURE_TYPE_LABEL,
   formatDepthRange,
-  formatSpeedRangeDisplay
+  formatSpeedRangeParts
 } from "@/lib/constants";
 import type { Lure } from "@/types/db";
 
 export function LureCard({ lure }: { lure: Lure }) {
   const primaryBachiType = lure.bachi_types[0];
   const rating = lure.rating ?? 0;
+  const speedLabels = formatSpeedRangeParts(lure.speed_range);
 
   return (
     <Link href={`/lures/${lure.id}`} className="lure-card relative block overflow-hidden p-4">
@@ -67,7 +68,14 @@ export function LureCard({ lure }: { lure: Lure }) {
         </div>
         <div>
           <p className="text-[10px] text-[var(--muted)]">速度域</p>
-          <p className="text-xs leading-snug text-[var(--paper)]">{formatSpeedRangeDisplay(lure.speed_range)}</p>
+          <p className="text-xs leading-snug text-[var(--paper)]">
+            {speedLabels.map((label, index) => (
+              <span key={`${label}-${index}`}>
+                {index > 0 ? "、" : null}
+                {label}
+              </span>
+            ))}
+          </p>
         </div>
       </div>
 
