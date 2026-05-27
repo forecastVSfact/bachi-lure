@@ -112,9 +112,6 @@ export default async function HomePage() {
       </section>
 
       <section className="rounded bg-[var(--water-mid)] p-10 text-center">
-        <div className="mx-auto mb-3 flex h-[60px] w-[60px] items-center justify-center rounded-full border border-[var(--teal)]">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#1D9E75" strokeWidth="1.8"/><circle cx="14" cy="11" r="1.3" fill="#1D9E75"/></svg>
-        </div>
         <h2 className="serif-title text-lg">オヤビッチャ</h2>
         <p className="mt-1 text-[13px] text-[var(--muted)]">バチ抜け歴: 28年 / フィールド: 東京湾奥</p>
         <div className="mx-auto mt-4 max-w-xl border-l-[3px] border-[var(--teal)] bg-black/10 p-3 text-left text-[13px] text-[var(--paper)]">
