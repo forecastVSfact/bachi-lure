@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import {
   BACHI_TYPE_LABEL,
+  BACHI_TYPES,
   CASTING_DISTANCE_LABEL,
   LURE_TYPE_LABEL,
   formatDepthRange,
@@ -9,7 +10,8 @@ import {
 import type { Lure } from "@/types/db";
 
 export function LureCard({ lure }: { lure: Lure }) {
-  const primaryBachiType = lure.bachi_types[0];
+  const bachiTypeSet = new Set(lure.bachi_types);
+  const orderedBachiTypes = BACHI_TYPES.filter((type) => bachiTypeSet.has(type));
   const rating = lure.rating ?? 0;
   const speedLabels = formatSpeedRangeParts(lure.speed_range);
 
@@ -17,10 +19,16 @@ export function LureCard({ lure }: { lure: Lure }) {
     <Link href={`/lures/${lure.id}`} className="lure-card relative block overflow-hidden p-4">
       <span className="lure-card-accent" />
       <div className="relative mb-4 h-40 overflow-hidden rounded-sm border border-[var(--border)] bg-[var(--water-mid)]">
-        <div className="absolute left-2 top-2 z-10 flex gap-1 text-[10px]">
-          <span className="badge-bachi rounded px-2 py-1">
-            {primaryBachiType ? BACHI_TYPE_LABEL[primaryBachiType] ?? primaryBachiType : "未設定"}
-          </span>
+        <div className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-1rem)] flex-wrap gap-1 text-[10px]">
+          {orderedBachiTypes.length ? (
+            orderedBachiTypes.map((type) => (
+              <span key={type} className="badge-bachi rounded px-2 py-1">
+                {BACHI_TYPE_LABEL[type] ?? type}
+              </span>
+            ))
+          ) : (
+            <span className="badge-bachi rounded px-2 py-1">未設定</span>
+          )}
           <span className="badge-type rounded px-2 py-1">{LURE_TYPE_LABEL[lure.lure_type] ?? lure.lure_type}</span>
         </div>
         {lure.image_url ? (
