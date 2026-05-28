@@ -146,6 +146,14 @@ a {
   padding-left: 1.25rem;
 }
 
+.markdown-content img {
+  display: block;
+  width: min(100%, 320px);
+  margin: 1.25rem auto;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;
