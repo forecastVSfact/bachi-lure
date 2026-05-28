@@ -42,9 +42,10 @@ export default async function AdminPage() {
       <section className="rounded bg-[var(--water-deep)] p-4">
         <h2 className="serif-title mb-3 text-xl font-bold">Column form</h2>
         <form action={upsertColumn} className="grid gap-2">
-          <input name="id" placeholder="id(for update)" className="field-dark p-2" />
+          <input name="id" required placeholder="slug (例: about)" className="field-dark p-2" />
           <input name="title" required placeholder="title" className="field-dark p-2" />
           <input name="category" required placeholder="category" className="field-dark p-2" />
+          <input name="meta_description" placeholder="meta description" className="field-dark p-2" />
           <input name="published_at" placeholder="2026-01-01T00:00:00+09:00" className="field-dark p-2" />
           <textarea name="body" required placeholder="markdown body" className="field-dark min-h-32 p-2" />
           <button className="rounded bg-[var(--teal)] px-4 py-2 text-white">Save</button>

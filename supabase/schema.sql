@@ -41,10 +41,11 @@ create table if not exists lure_bachi_types (
 );
 
 create table if not exists columns (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   title text not null,
   category text not null,
   body text not null,
+  meta_description text,
   published_at timestamptz,
   created_at timestamptz default now(),
   updated_at timestamptz default now()

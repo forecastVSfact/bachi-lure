@@ -102,6 +102,7 @@ export async function upsertColumn(formData: FormData) {
     title: payload.title,
     category: payload.category,
     body: payload.body,
+    meta_description: payload.meta_description || null,
     published_at: payload.published_at || null
   });
   revalidatePath("/admin");

@@ -1,4 +1,5 @@
 ﻿import { unstable_noStore as noStore } from "next/cache";
+import { getFileColumnById, loadFileColumns, mergeColumns } from "@/lib/column-content";
 import { pickPrimaryImageUrl } from "@/lib/lure-image";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import type { ColumnPost, Lure, LureImage } from "@/types/db";
@@ -137,20 +138,25 @@ export async function getLatestColumns(limit = 3) {
   const { data } = await supabase
     .from("columns")
     .select("*")
-    .order("published_at", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as ColumnPost[];
+    .order("published_at", { ascending: false });
+  const columns = mergeColumns((data ?? []) as ColumnPost[], loadFileColumns());
+  return columns.slice(0, limit);
 }
 
 export async function getColumns(category?: string) {
   const supabase = createSupabaseServerClient();
-  let query = supabase.from("columns").select("*").order("published_at", { ascending: false });
-  if (category && category !== "all") query = query.eq("category", category);
-  const { data } = await query;
-  return (data ?? []) as ColumnPost[];
+  const { data } = await supabase.from("columns").select("*").order("published_at", { ascending: false });
+  let columns = mergeColumns((data ?? []) as ColumnPost[], loadFileColumns());
+  if (category && category !== "all") {
+    columns = columns.filter((column) => column.category === category);
+  }
+  return columns;
 }
 
 export async function getColumnById(id: string) {
+  const fileColumn = getFileColumnById(id);
+  if (fileColumn) return fileColumn;
+
   const supabase = createSupabaseServerClient();
   const { data } = await supabase.from("columns").select("*").eq("id", id).single();
   return data as ColumnPost | null;

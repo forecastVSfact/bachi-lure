@@ -15,7 +15,8 @@
     "images:missing": "ts-node scripts/list-missing-images.ts",
     "dedupe:lures": "ts-node scripts/dedupe-lures.ts",
     "audit:lures": "ts-node scripts/audit-lures.ts",
-    "prune:stray-lures": "ts-node scripts/prune-stray-lures.ts"
+    "prune:stray-lures": "ts-node scripts/prune-stray-lures.ts",
+    "import:columns": "ts-node scripts/import-columns.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

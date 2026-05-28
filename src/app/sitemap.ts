@@ -1,5 +1,7 @@
 ﻿import type { MetadataRoute } from "next";
+import { loadFileColumns } from "@/lib/column-content";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import type { ColumnPost } from "@/types/db";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createSupabaseAdminClient();
@@ -16,7 +18,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const lurePages = (lures ?? []).map((l) => ({ url: `${base}/lures/${l.id}`, lastModified: l.updated_at ? new Date(l.updated_at) : new Date() }));
-  const columnPages = (columns ?? []).map((c) => ({ url: `${base}/columns/${c.id}`, lastModified: c.updated_at ? new Date(c.updated_at) : new Date() }));
+  const fileColumns = loadFileColumns();
+  const dbColumns = (columns ?? []) as Pick<ColumnPost, "id" | "updated_at">[];
+  const columnIds = new Set<string>();
+  const columnPages: MetadataRoute.Sitemap = [];
+
+  for (const column of [...dbColumns, ...fileColumns]) {
+    if (columnIds.has(column.id)) continue;
+    columnIds.add(column.id);
+    columnPages.push({
+      url: `${base}/columns/${column.id}`,
+      lastModified: column.updated_at ? new Date(column.updated_at) : new Date()
+    });
+  }
 
   return [...staticPages, ...lurePages, ...columnPages];
 }

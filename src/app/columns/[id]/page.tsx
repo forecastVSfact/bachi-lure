@@ -8,11 +8,14 @@ import { createMetadata } from "@/lib/seo";
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const column = await getColumnById(params.id);
   if (!column) return {};
-  const description = column.body.replace(/\s+/g, " ").trim().slice(0, 120);
+  const description =
+    column.meta_description?.trim() ||
+    column.body.replace(/\s+/g, " ").trim().slice(0, 120) ||
+    `${column.category}に関する管理人コラム。`;
 
   return createMetadata({
     title: column.title,
-    description: description || `${column.category}に関する管理人コラム。`,
+    description,
     path: `/columns/${column.id}`
   });
 }

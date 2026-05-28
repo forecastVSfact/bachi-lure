@@ -126,9 +126,15 @@ export function buildLureCollectionJsonLd(lures: Lure[]) {
 }
 
 export function buildColumnArticleJsonLd(column: ColumnPost) {
+  const description =
+    column.meta_description?.trim() ||
+    column.body.replace(/\s+/g, " ").trim().slice(0, 160) ||
+    undefined;
+
   return {
     "@type": "Article",
     headline: column.title,
+    description,
     articleSection: column.category,
     datePublished: column.published_at ?? undefined,
     dateModified: column.updated_at ?? column.published_at ?? undefined,
