@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from "next";
 import Link from "next/link";
+import Script from "next/script";
 import { Bebas_Neue, Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 import "./globals.css";
@@ -51,6 +52,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <head>
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-TWKFGLYJZF" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-TWKFGLYJZF');
+          `}
+        </Script>
         <meta name="robots" content="noai, noimageai" />
       </head>
       <body className={`${notoSansJp.variable} ${notoSerifJp.variable} ${bebasNeue.variable}`}>
