@@ -1,5 +1,5 @@
 ﻿import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
+import { ColumnMarkdown } from "@/components/ColumnMarkdown";
 import { JsonLd } from "@/components/JsonLd";
 import { buildBreadcrumbJsonLd, buildColumnArticleJsonLd } from "@/lib/json-ld";
 import { getColumnById } from "@/lib/data";
@@ -39,7 +39,7 @@ export default async function ColumnDetailPage({ params }: { params: { id: strin
       <p className="text-xs text-[var(--muted)]">{column.category} / {column.published_at?.slice(0, 10)}</p>
       <h1 className="serif-title mt-3 text-[32px] leading-tight">{column.title}</h1>
       <div className="markdown-content mt-6">
-        <ReactMarkdown>{column.body}</ReactMarkdown>
+        <ColumnMarkdown>{column.body}</ColumnMarkdown>
       </div>
     </article>
   );
