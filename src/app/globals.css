@@ -123,41 +123,21 @@ a {
 
 .markdown-content {
   color: var(--paper);
-  font-size: 15px;
-  line-height: 1.75;
-}
-
-@media (min-width: 768px) {
-  .markdown-content {
-    font-size: 16px;
-    line-height: 1.85;
-  }
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .markdown-content h2 {
   font-family: "Noto Serif JP", serif;
   color: var(--moon);
-  font-size: 18px;
+  font-size: 16px;
   border-left: 3px solid var(--teal);
   padding-left: 10px;
-  margin: 1.5rem 0 0.75rem;
-}
-
-@media (min-width: 768px) {
-  .markdown-content h2 {
-    font-size: 20px;
-    margin: 1.75rem 0 1rem;
-  }
+  margin: 1.25rem 0 0.6rem;
 }
 
 .markdown-content p {
-  margin: 0.75rem 0;
-}
-
-@media (min-width: 768px) {
-  .markdown-content p {
-    margin: 0.9rem 0;
-  }
+  margin: 0.65rem 0;
 }
 
 .markdown-content ul,

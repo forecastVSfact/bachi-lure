@@ -57,7 +57,7 @@ export default async function ColumnDetailPage({ params }: { params: { id: strin
           </>
         ) : null}
       </p>
-      <h1 className="serif-title mt-2 text-[22px] leading-snug md:mt-3 md:text-[28px] md:leading-tight">{column.title}</h1>
+      <h1 className="serif-title mt-2 text-xl leading-snug md:mt-3">{column.title}</h1>
       <div className="markdown-content mt-4 md:mt-6">
         <ColumnMarkdown>{column.body}</ColumnMarkdown>
       </div>
