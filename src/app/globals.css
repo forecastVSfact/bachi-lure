@@ -123,21 +123,15 @@ a {
 
 .markdown-content {
   color: var(--paper);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.7;
-}
-
-@media (min-width: 768px) {
-  .markdown-content {
-    font-size: 15px;
-  }
 }
 
 .markdown-content h2 {
   font-family: var(--font-sans-jp), "Noto Sans JP", sans-serif;
   color: var(--moon);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   border-left: 3px solid var(--teal);
   padding-left: 10px;
@@ -147,7 +141,7 @@ a {
 
 @media (min-width: 768px) {
   .markdown-content h2 {
-    font-size: 17px;
+    font-size: 20px;
   }
 }
 
