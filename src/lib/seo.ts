@@ -20,7 +20,10 @@ type CreateMetadataOptions = {
 };
 
 function resolveUrl(path: string): string {
-  return path.startsWith("http") ? path : `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  if (path.startsWith("http")) return path;
+  if (path === "/" || path === "") return SITE_URL;
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return `${SITE_URL}${normalized}`;
 }
 
 function resolveTitleText(title: Metadata["title"], fallback: string): string {

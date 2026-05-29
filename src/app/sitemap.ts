@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const base = "https://www.bachi-lure.com";
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${base}/`, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
+    { url: base, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${base}/lures`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/columns`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 }
   ];
