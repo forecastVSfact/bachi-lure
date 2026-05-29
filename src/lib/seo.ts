@@ -13,6 +13,10 @@ type CreateMetadataOptions = {
   absoluteTitle?: boolean;
   imageUrl?: string | null;
   noIndex?: boolean;
+  keywords?: string[];
+  openGraphType?: "website" | "article";
+  publishedTime?: string;
+  modifiedTime?: string;
 };
 
 function resolveUrl(path: string): string {
@@ -34,23 +38,28 @@ export function createMetadata(opts: CreateMetadataOptions): Metadata {
   const titleText = resolveTitleText(title, opts.title);
   const imageUrl = opts.imageUrl?.trim() || null;
 
-  const openGraphImages = imageUrl
-    ? [{ url: imageUrl, width: 1200, height: 630, alt: titleText }]
+  const ogType = opts.openGraphType ?? "website";
+  const resolvedImage = imageUrl ? resolveUrl(imageUrl) : null;
+  const openGraphImages = resolvedImage
+    ? [{ url: resolvedImage, width: 1200, height: 630, alt: titleText }]
     : [{ url: "/opengraph-image", width: 1200, height: 630, alt: SITE_NAME }];
 
   return {
     title,
     description,
+    ...(opts.keywords?.length ? { keywords: opts.keywords } : {}),
     alternates: { canonical: url },
     robots: opts.noIndex ? { index: false, follow: false } : { index: true, follow: true },
     openGraph: {
-      type: "website",
+      type: ogType,
       locale: "ja_JP",
       url,
       siteName: SITE_NAME,
       title: titleText,
       description,
-      images: openGraphImages
+      images: openGraphImages,
+      ...(ogType === "article" && opts.publishedTime ? { publishedTime: opts.publishedTime } : {}),
+      ...(ogType === "article" && opts.modifiedTime ? { modifiedTime: opts.modifiedTime } : {})
     },
     twitter: {
       card: "summary_large_image",

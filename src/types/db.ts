@@ -45,6 +45,8 @@ export type ColumnPost = {
   category: string;
   body: string;
   meta_description: string | null;
+  og_image: string | null;
+  keywords: string[] | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;

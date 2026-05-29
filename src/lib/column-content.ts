@@ -9,8 +9,18 @@ type ColumnFrontmatter = {
   title: string;
   category: string;
   meta_description?: string;
+  og_image?: string;
+  keywords?: string[];
   published_at?: string;
 };
+
+function parseKeywords(raw: string | undefined): string[] | undefined {
+  if (!raw?.trim()) return undefined;
+  return raw
+    .split(/[,、]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
 
 function parseMarkdownFile(content: string): { frontmatter: ColumnFrontmatter; body: string } {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
@@ -34,6 +44,8 @@ function parseMarkdownFile(content: string): { frontmatter: ColumnFrontmatter; b
       title,
       category,
       meta_description: frontmatter.meta_description,
+      og_image: frontmatter.og_image,
+      keywords: parseKeywords(frontmatter.keywords),
       published_at: frontmatter.published_at
     },
     body: match[2].trim()
@@ -48,6 +60,8 @@ function toColumnPost(frontmatter: ColumnFrontmatter, body: string, updatedAt: s
     category: frontmatter.category,
     body,
     meta_description: frontmatter.meta_description ?? null,
+    og_image: frontmatter.og_image ?? null,
+    keywords: frontmatter.keywords ?? null,
     published_at: frontmatter.published_at ?? null,
     created_at: updatedAt,
     updated_at: updatedAt

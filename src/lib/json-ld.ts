@@ -1,6 +1,9 @@
+import { columnMetaDescription, extractYouTubeIds, resolveColumnOgImage } from "@/lib/column-seo";
 import { BACHI_TYPE_LABEL } from "@/lib/constants";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 import type { ColumnPost, Lure } from "@/types/db";
+
+const BLOG_ID = `${SITE_URL}/columns#blog`;
 
 const ORG_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -126,31 +129,54 @@ export function buildLureCollectionJsonLd(lures: Lure[]) {
 }
 
 export function buildColumnArticleJsonLd(column: ColumnPost) {
-  const description =
-    column.meta_description?.trim() ||
-    column.body.replace(/\s+/g, " ").trim().slice(0, 160) ||
-    undefined;
+  const url = `${SITE_URL}/columns/${column.id}`;
+  const image = resolveColumnOgImage(column);
+  const description = columnMetaDescription(column);
+  const videoIds = extractYouTubeIds(column.body);
 
   return {
-    "@type": "Article",
+    "@type": "BlogPosting",
+    "@id": url,
     headline: column.title,
     description,
+    ...(image ? { image: [image] } : {}),
     articleSection: column.category,
     datePublished: column.published_at ?? undefined,
     dateModified: column.updated_at ?? column.published_at ?? undefined,
     author: { "@id": ORG_ID },
     publisher: { "@id": ORG_ID },
-    mainEntityOfPage: `${SITE_URL}/columns/${column.id}`,
-    url: `${SITE_URL}/columns/${column.id}`,
-    inLanguage: "ja-JP"
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    url,
+    inLanguage: "ja-JP",
+    isPartOf: { "@type": "Blog", "@id": BLOG_ID, name: "管理人コラム", url: `${SITE_URL}/columns` },
+    ...(videoIds.length
+      ? {
+          video: videoIds.map((id) => ({
+            "@type": "VideoObject",
+            name: column.title,
+            embedUrl: `https://www.youtube.com/embed/${id}`,
+            thumbnailUrl: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
+          }))
+        }
+      : {})
   };
 }
 
-export function buildColumnCollectionJsonLd() {
+export function buildColumnCollectionJsonLd(columns: ColumnPost[]) {
   return {
     "@type": "CollectionPage",
     name: "管理人コラム一覧",
     url: `${SITE_URL}/columns`,
-    description: "バチ抜け・シーバス釣りに関する管理人コラム一覧。"
+    description: "バチ抜け・シーバス釣りに関する管理人コラム一覧。テクニック、タックル、エリアガイドなど実釣ベースの記事。",
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: columns.length,
+      itemListElement: columns.map((column, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${SITE_URL}/columns/${column.id}`,
+        name: column.title
+      }))
+    }
   };
 }
