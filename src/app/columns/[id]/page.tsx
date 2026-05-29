@@ -35,7 +35,7 @@ export default async function ColumnDetailPage({ params }: { params: { id: strin
   const publishedDate = column.published_at?.slice(0, 10);
 
   return (
-    <article className="lure-card rounded p-6 md:p-8">
+    <article className="lure-card rounded p-4 md:p-8">
       <JsonLd
         data={[
           buildBreadcrumbJsonLd([
@@ -57,8 +57,8 @@ export default async function ColumnDetailPage({ params }: { params: { id: strin
           </>
         ) : null}
       </p>
-      <h1 className="serif-title mt-3 text-[32px] leading-tight">{column.title}</h1>
-      <div className="markdown-content mt-6">
+      <h1 className="serif-title mt-2 text-[22px] leading-snug md:mt-3 md:text-[28px] md:leading-tight">{column.title}</h1>
+      <div className="markdown-content mt-4 md:mt-6">
         <ColumnMarkdown>{column.body}</ColumnMarkdown>
       </div>
       <ColumnRelated currentId={column.id} columns={columns} />
