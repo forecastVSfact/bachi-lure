@@ -154,6 +154,8 @@ export function buildColumnArticleJsonLd(column: ColumnPost) {
           video: videoIds.map((id) => ({
             "@type": "VideoObject",
             name: column.title,
+            description,
+            uploadDate: column.published_at ?? column.created_at,
             embedUrl: `https://www.youtube.com/embed/${id}`,
             thumbnailUrl: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
           }))
