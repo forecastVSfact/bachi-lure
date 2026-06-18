@@ -30,7 +30,10 @@ export function ColumnListItem({ column }: ColumnListItemProps) {
           ) : null}
           <span className="inline-block rounded px-2 py-0.5 text-[10px] badge-bachi">{column.category}</span>
         </div>
-        <h2 className="serif-title text-xl font-medium leading-snug text-[var(--teal)] md:text-2xl md:leading-tight">
+        <h2
+          className="text-xl font-medium leading-snug text-[var(--teal)] md:text-2xl md:leading-tight"
+          style={{ fontFamily: "var(--font-serif-jp), 'Noto Serif JP', serif" }}
+        >
           {column.title}
         </h2>
         <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[var(--muted)] md:text-[15px]">{excerpt}</p>
