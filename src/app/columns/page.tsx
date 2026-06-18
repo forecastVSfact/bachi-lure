@@ -1,5 +1,5 @@
 ﻿import Link from "next/link";
-import { ColumnCard } from "@/components/ColumnCard";
+import { ColumnListItem } from "@/components/ColumnListItem";
 import { JsonLd } from "@/components/JsonLd";
 import { COLUMN_CATEGORY_LABELS } from "@/lib/constants";
 import { getColumns } from "@/lib/data";
@@ -36,9 +36,9 @@ export default async function ColumnsPage({ searchParams }: { searchParams: Reco
           <Link key={c} href={`/columns?category=${encodeURIComponent(c)}`} className={`filter-tab ${category === c ? "active" : ""}`}>{c}</Link>
         ))}
       </div>
-      <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto max-w-3xl">
         {columns.map((col) => (
-          <ColumnCard key={col.id} column={col} showExcerpt titleTag="h2" />
+          <ColumnListItem key={col.id} column={col} />
         ))}
       </div>
     </div>
