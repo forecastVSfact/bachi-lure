@@ -1,4 +1,5 @@
 ﻿import type { MetadataRoute } from "next";
+import { BACHI_PAGE_CONFIGS } from "@/lib/bachi-pages";
 import { loadFileColumns } from "@/lib/column-content";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import type { ColumnPost } from "@/types/db";
@@ -11,9 +12,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   const base = "https://www.bachi-lure.com";
+  const bachiTypePages: MetadataRoute.Sitemap = BACHI_PAGE_CONFIGS.map((config) => ({
+    url: `${base}/lures/${config.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.85
+  }));
+
   const staticPages: MetadataRoute.Sitemap = [
     { url: base, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${base}/lures`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    ...bachiTypePages,
     { url: `${base}/columns`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 }
   ];
 

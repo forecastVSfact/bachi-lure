@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { LureCard } from "@/components/LureCard";
 import { LureGallery } from "@/components/LureGallery";
 import { LureSummary } from "@/components/LureSummary";
+import { BachiTypeBadge } from "@/components/BachiTypeBadge";
 import {
   BACHI_TYPE_LABEL,
   CASTING_DISTANCE_LABEL,
@@ -118,7 +119,7 @@ export default async function LureDetailPage({ params }: { params: { id: string 
         <div className="mx-auto w-full max-w-md space-y-4">
           <div className="lure-card relative overflow-hidden p-4">
             <span className="lure-card-accent" />
-            <LureSummary lure={lure} images={images} />
+            <LureSummary lure={lure} images={images} linkBachiBadges />
           </div>
           <AffiliateButtons lure={lure} />
         </div>
@@ -135,11 +136,7 @@ export default async function LureDetailPage({ params }: { params: { id: string 
           <div className="lure-card space-y-4 rounded p-6 lg:col-span-2">
             <p className="flex flex-wrap gap-2 text-xs">
               {lure.bachi_types.length ? (
-                lure.bachi_types.map((type) => (
-                  <span key={type} className="badge-bachi rounded px-2 py-1">
-                    {BACHI_TYPE_LABEL[type] ?? type}
-                  </span>
-                ))
+                lure.bachi_types.map((type) => <BachiTypeBadge key={type} type={type} linked />)
               ) : (
                 <span className="badge-bachi rounded px-2 py-1">未設定</span>
               )}

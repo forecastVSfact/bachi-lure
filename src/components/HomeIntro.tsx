@@ -23,7 +23,11 @@ export function HomeIntro({ className }: { className?: string }) {
           <Link href="/lures" className="text-[var(--teal)] underline-offset-2 hover:underline">
             ルアー一覧
           </Link>
-          からバチ種別で絞り込んでまだ使っていないルアーとその使い方をご覧ください。また
+          からバチ種別で絞り込んでまだ使っていないルアーとその使い方をご覧ください。ワームリグで釣りたい方は
+          <Link href="/columns/worm-bachi" className="text-[var(--teal)] underline-offset-2 hover:underline">
+            バチ抜けワームの釣り方
+          </Link>
+          もあわせてご覧ください。また
           <Link href="/columns" className="text-[var(--teal)] underline-offset-2 hover:underline">
             管理人コラム
           </Link>

@@ -1,5 +1,5 @@
+import { BachiTypeBadge } from "@/components/BachiTypeBadge";
 import {
-  BACHI_TYPE_LABEL,
   BACHI_TYPES,
   CASTING_DISTANCE_LABEL,
   LURE_TYPE_LABEL,
@@ -15,9 +15,11 @@ type LureSummaryProps = {
   images?: LureImage[];
   /** detail: PC向けに画像エリアをやや大きく */
   size?: "card" | "detail";
+  /** バチ種別バッジを一覧ページへリンクする */
+  linkBachiBadges?: boolean;
 };
 
-export function LureSummary({ lure, images, size = "card" }: LureSummaryProps) {
+export function LureSummary({ lure, images, size = "card", linkBachiBadges = false }: LureSummaryProps) {
   const bachiTypeSet = new Set(lure.bachi_types);
   const orderedBachiTypes = BACHI_TYPES.filter((type) => bachiTypeSet.has(type));
   const rating = lure.rating ?? 0;
@@ -39,9 +41,7 @@ export function LureSummary({ lure, images, size = "card" }: LureSummaryProps) {
         <div className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-1rem)] flex-wrap gap-1 text-[10px]">
           {orderedBachiTypes.length ? (
             orderedBachiTypes.map((type) => (
-              <span key={type} className="badge-bachi rounded px-2 py-1">
-                {BACHI_TYPE_LABEL[type] ?? type}
-              </span>
+              <BachiTypeBadge key={type} type={type} linked={linkBachiBadges} />
             ))
           ) : (
             <span className="badge-bachi rounded px-2 py-1">未設定</span>
