@@ -62,7 +62,7 @@ export default async function ColumnDetailPage({ params }: { params: Promise<{ i
       </p>
       <h1 className="mt-2 text-[28px] font-medium leading-snug text-[var(--moon)] md:mt-3 md:text-[36px] md:leading-tight">{column.title}</h1>
       <div className="markdown-content mt-4 md:mt-6">
-        <ColumnMarkdown>{column.body}</ColumnMarkdown>
+        <ColumnMarkdown sourceId={column.id}>{column.body}</ColumnMarkdown>
       </div>
       <ColumnLures />
       <ColumnRelated currentId={column.id} columns={columns} />
