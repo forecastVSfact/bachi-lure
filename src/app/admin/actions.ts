@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/admin-auth";
 import { BACHI_TYPES } from "@/lib/constants";
 
 export async function loginAdmin(_: { error?: string } | undefined, formData: FormData) {
@@ -23,6 +24,7 @@ export async function logoutAdmin() {
 }
 
 export async function upsertLure(formData: FormData) {
+  await requireAdmin();
   const supabase = createSupabaseAdminClient();
   const payload = Object.fromEntries(formData.entries()) as Record<string, string>;
   const id = payload.id || undefined;
@@ -89,12 +91,14 @@ export async function upsertLure(formData: FormData) {
 }
 
 export async function deleteLure(formData: FormData) {
+  await requireAdmin();
   const supabase = createSupabaseAdminClient();
   await supabase.from("lures").delete().eq("id", String(formData.get("id")));
   revalidatePath("/admin");
 }
 
 export async function upsertColumn(formData: FormData) {
+  await requireAdmin();
   const supabase = createSupabaseAdminClient();
   const payload = Object.fromEntries(formData.entries()) as Record<string, string>;
   await supabase.from("columns").upsert({
@@ -109,6 +113,7 @@ export async function upsertColumn(formData: FormData) {
 }
 
 export async function deleteColumn(formData: FormData) {
+  await requireAdmin();
   const supabase = createSupabaseAdminClient();
   await supabase.from("columns").delete().eq("id", String(formData.get("id")));
   revalidatePath("/admin");
