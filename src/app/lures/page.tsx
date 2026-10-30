@@ -14,13 +14,14 @@ export const metadata = createMetadata({
   path: "/lures"
 });
 
-export default async function LuresPage({ searchParams }: { searchParams: Record<string, string | undefined> }) {
+export default async function LuresPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
   const lures = await getLures({
-    bachi: searchParams.bachi,
-    type: searchParams.type,
-    speed: searchParams.speed,
-    casting: searchParams.casting,
-    q: searchParams.q
+    bachi: sp.bachi,
+    type: sp.type,
+    speed: sp.speed,
+    casting: sp.casting,
+    q: sp.q
   });
 
   return (

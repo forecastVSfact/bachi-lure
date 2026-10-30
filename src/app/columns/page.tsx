@@ -14,8 +14,9 @@ export const metadata = createMetadata({
   keywords: ["バチ抜け", "シーバス", "釣りコラム", "管理人コラム", "バチ抜けルアー"]
 });
 
-export default async function ColumnsPage({ searchParams }: { searchParams: Record<string, string | undefined> }) {
-  const category = searchParams.category ?? "all";
+export default async function ColumnsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
+  const category = sp.category ?? "all";
   const columns = await getColumns(category);
 
   return (

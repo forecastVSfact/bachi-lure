@@ -1,12 +1,12 @@
 ﻿"use client";
 
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { loginAdmin } from "../actions";
 
 const initialState = { error: "" };
 
 export default function AdminLoginPage() {
-  const [state, formAction] = useFormState(loginAdmin, initialState);
+  const [state, formAction] = useActionState(loginAdmin, initialState);
 
   return (
     <div className="mx-auto max-w-md rounded bg-[var(--water-deep)] p-6">

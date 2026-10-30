@@ -17,8 +17,9 @@ import { buildBreadcrumbJsonLd, buildLureProductJsonLd } from "@/lib/json-ld";
 import { getLureById, getLureImages, getRelatedLures } from "@/lib/data";
 import { createMetadata } from "@/lib/seo";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const lure = await getLureById(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const lure = await getLureById(id);
   if (!lure) return {};
   const bachiTypeLabel = lure.bachi_types.length
     ? lure.bachi_types.map((type) => BACHI_TYPE_LABEL[type] ?? type).join("・")
@@ -88,8 +89,9 @@ function YoutubeSection({ lure }: { lure: Lure }) {
   );
 }
 
-export default async function LureDetailPage({ params }: { params: { id: string } }) {
-  const lure = await getLureById(params.id);
+export default async function LureDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const lure = await getLureById(id);
   if (!lure) notFound();
   const [images, related] = await Promise.all([
     getLureImages(lure.id),

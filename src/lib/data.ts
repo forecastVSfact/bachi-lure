@@ -32,7 +32,7 @@ function toLure(row: LureRowWithRelations): Lure {
 }
 
 export async function getTopStats() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const [{ count: lureCount }, { count: fishedCount }] = await Promise.all([
     supabase.from("lures").select("id", { count: "exact", head: true }),
     // 評価（rating）あり＝管理人が実釣したルアー。未評価は掲載のみで実釣インプレ対象外。
@@ -47,7 +47,7 @@ export async function getTopStats() {
 
 export async function getRecommendedLures(limit = 5) {
   noStore();
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data } = await supabase.from("lures").select(LURE_SELECT).eq("rating", 5);
 
   const lures = ((data ?? []) as LureRowWithRelations[]).map(toLure);
@@ -62,7 +62,7 @@ export async function getLures(filters?: {
   q?: string;
 }) {
   noStore();
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   let query = supabase.from("lures").select(LURE_SELECT).order("updated_at", { ascending: false });
 
   if (filters?.bachi && filters.bachi !== "all") {
@@ -85,13 +85,13 @@ export async function getLures(filters?: {
 
 export async function getLureById(id: string) {
   noStore();
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data } = await supabase.from("lures").select(LURE_SELECT).eq("id", id).single();
   return data ? toLure(data as LureRowWithRelations) : null;
 }
 
 export async function getLureImages(lureId: string) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data } = await supabase.from("lure_images").select("*").eq("lure_id", lureId).order("sort_order");
   return (data ?? []) as LureImage[];
 }
@@ -108,7 +108,7 @@ function sizeDistanceMm(base: number | null, candidate: number | null): number {
 
 /** バチ種別が1つ以上一致するルアー。一致数が多い順→サイズが近い順で最大3件 */
 export async function getRelatedLures(lureId: string, bachiTypes: string[], sizeMm: number | null) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   if (!bachiTypes.length) return [];
 
   const { data: relationRows } = await supabase
@@ -134,7 +134,7 @@ export async function getRelatedLures(lureId: string, bachiTypes: string[], size
 }
 
 export async function getLatestColumns(limit = 3) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("columns")
     .select("*")
@@ -144,7 +144,7 @@ export async function getLatestColumns(limit = 3) {
 }
 
 export async function getColumns(category?: string) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data } = await supabase.from("columns").select("*").order("published_at", { ascending: false });
   let columns = mergeColumns((data ?? []) as ColumnPost[], loadFileColumns());
   if (category && category !== "all") {
@@ -157,7 +157,7 @@ export async function getColumnById(id: string) {
   const fileColumn = getFileColumnById(id);
   if (fileColumn) return fileColumn;
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data } = await supabase.from("columns").select("*").eq("id", id).single();
   return data as ColumnPost | null;
 }

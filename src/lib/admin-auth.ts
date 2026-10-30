@@ -8,7 +8,7 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
  *   (未設定の場合は「ログイン済みであること」だけを確認する)
  */
 export async function requireAdmin() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
   const user = data.user;
   if (!user) redirect("/admin/login");

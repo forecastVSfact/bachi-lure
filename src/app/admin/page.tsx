@@ -5,7 +5,7 @@ import { AdminLureForm } from "@/components/AdminLureForm";
 import { deleteColumn, deleteLure, logoutAdmin, upsertColumn, upsertLure } from "./actions";
 
 export default async function AdminPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: authData } = await supabase.auth.getUser();
   if (!authData.user) redirect("/admin/login");
 

@@ -12,8 +12,9 @@ import { buildBreadcrumbJsonLd, buildColumnArticleJsonLd } from "@/lib/json-ld";
 import { getColumnById, getColumns } from "@/lib/data";
 import { createMetadata } from "@/lib/seo";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const column = await getColumnById(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const column = await getColumnById(id);
   if (!column) return {};
 
   return createMetadata({
@@ -28,8 +29,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   });
 }
 
-export default async function ColumnDetailPage({ params }: { params: { id: string } }) {
-  const [column, columns] = await Promise.all([getColumnById(params.id), getColumns()]);
+export default async function ColumnDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const [column, columns] = await Promise.all([getColumnById(id), getColumns()]);
   if (!column) notFound();
 
   const publishedDate = column.published_at?.slice(0, 10);

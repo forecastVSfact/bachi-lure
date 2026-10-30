@@ -11,14 +11,14 @@ export async function loginAdmin(_: { error?: string } | undefined, formData: Fo
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: error.message };
   redirect("/admin");
 }
 
 export async function logoutAdmin() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/admin/login");
 }
