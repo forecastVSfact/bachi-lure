@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Components } from "react-markdown";
+import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 
 function parseYouTubeId(url: string): string | null {
@@ -47,6 +48,7 @@ const markdownComponents: Components = {
   a: ({ href, children }) => {
     const videoId = href ? parseYouTubeId(href) : null;
     if (videoId) return <YouTubeEmbed id={videoId} />;
+    if (href?.startsWith("/")) return <Link href={href}>{children}</Link>;
     return (
       <a href={href} target="_blank" rel="noopener noreferrer">
         {children}

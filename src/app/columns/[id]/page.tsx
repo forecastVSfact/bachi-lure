@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ColumnMarkdown } from "@/components/ColumnMarkdown";
+import { ColumnLures } from "@/components/ColumnLures";
 import { ColumnRelated } from "@/components/ColumnRelated";
 import { JsonLd } from "@/components/JsonLd";
 import {
@@ -63,6 +64,7 @@ export default async function ColumnDetailPage({ params }: { params: Promise<{ i
       <div className="markdown-content mt-4 md:mt-6">
         <ColumnMarkdown>{column.body}</ColumnMarkdown>
       </div>
+      <ColumnLures />
       <ColumnRelated currentId={column.id} columns={columns} />
     </article>
   );

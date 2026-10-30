@@ -54,6 +54,20 @@ export async function getRecommendedLures(limit = 5) {
   return shuffle(lures).slice(0, limit);
 }
 
+/** 実釣評価の高い順（同点は名前順）。コラムから個別ルアーページへ内部リンクを張るために使う */
+export async function getTopRatedLures(limit = 6) {
+  noStore();
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("lures")
+    .select(LURE_SELECT)
+    .not("rating", "is", null)
+    .order("rating", { ascending: false })
+    .order("name", { ascending: true })
+    .limit(limit);
+  return ((data ?? []) as LureRowWithRelations[]).map(toLure);
+}
+
 export async function getLures(filters?: {
   bachi?: string;
   type?: string;

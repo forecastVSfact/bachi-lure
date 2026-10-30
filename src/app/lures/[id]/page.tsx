@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/JsonLd";
+import { AffiliateLink } from "@/components/AffiliateLink";
 import { LureCard } from "@/components/LureCard";
 import { LureGallery } from "@/components/LureGallery";
 import { LureSummary } from "@/components/LureSummary";
@@ -40,20 +41,26 @@ function AffiliateButtons({ lure }: { lure: Lure }) {
   return (
     <div className="flex flex-col gap-2">
       {lure.amazon_url && (
-        <a
+        <AffiliateLink
           href={lure.amazon_url}
+          store="amazon"
+          lureId={lure.id}
+          lureName={lure.name}
           className="block w-full rounded-sm bg-[var(--amazon-orange)] px-4 py-3 text-center font-semibold text-black"
         >
           Amazon
-        </a>
+        </AffiliateLink>
       )}
       {lure.rakuten_url && (
-        <a
+        <AffiliateLink
           href={lure.rakuten_url}
+          store="rakuten"
+          lureId={lure.id}
+          lureName={lure.name}
           className="block w-full rounded-sm bg-[var(--rakuten-red)] px-4 py-3 text-center font-semibold text-white"
         >
           楽天
-        </a>
+        </AffiliateLink>
       )}
     </div>
   );
