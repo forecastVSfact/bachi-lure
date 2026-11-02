@@ -1,19 +1,25 @@
 import Link from "next/link";
 import { LureCard } from "@/components/LureCard";
 import { BACHI_PAGE_CONFIGS } from "@/lib/bachi-pages";
-import { getTopRatedLures } from "@/lib/data";
+import { getLuresByNameKeywords, getTopRatedLures } from "@/lib/data";
 
 /** コラム末尾に置く、個別ルアーページ・バチ種別ページへの内部リンク集 */
-export async function ColumnLures() {
-  const lures = await getTopRatedLures(6);
+export async function ColumnLures({ relatedNames }: { relatedNames?: string[] | null }) {
+  const featured = relatedNames?.length ? await getLuresByNameKeywords(relatedNames) : [];
+  const isFeatured = featured.length > 0;
+  const lures = isFeatured ? featured : await getTopRatedLures(6);
   if (!lures.length) return null;
 
   return (
     <section className="mt-10 border-t border-[var(--border)] pt-8" aria-labelledby="column-lures-heading">
       <h2 id="column-lures-heading" className="serif-title mb-2 text-xl font-bold">
-        管理人が実釣したバチ抜けルアー
+        {isFeatured ? "このコラムで紹介したルアー" : "管理人が実釣したバチ抜けルアー"}
       </h2>
-      <p className="mb-4 text-sm text-[var(--muted)]">評価の高いルアーから紹介します。詳しいインプレは各ページで見られます。</p>
+      <p className="mb-4 text-sm text-[var(--muted)]">
+        {isFeatured
+          ? "コラムに出てきたルアーです。詳しいインプレは各ページで見られます。"
+          : "評価の高いルアーから紹介します。詳しいインプレは各ページで見られます。"}
+      </p>
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {lures.map((lure) => (
           <LureCard key={lure.id} lure={lure} />

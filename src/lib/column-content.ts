@@ -11,6 +11,7 @@ type ColumnFrontmatter = {
   meta_description?: string;
   og_image?: string;
   keywords?: string[];
+  related_lures?: string[];
   published_at?: string;
 };
 
@@ -46,6 +47,7 @@ function parseMarkdownFile(content: string): { frontmatter: ColumnFrontmatter; b
       meta_description: frontmatter.meta_description,
       og_image: frontmatter.og_image,
       keywords: parseKeywords(frontmatter.keywords),
+      related_lures: parseKeywords(frontmatter.related_lures),
       published_at: frontmatter.published_at
     },
     body: match[2].trim()
@@ -62,6 +64,7 @@ function toColumnPost(frontmatter: ColumnFrontmatter, body: string, updatedAt: s
     meta_description: frontmatter.meta_description ?? null,
     og_image: frontmatter.og_image ?? null,
     keywords: frontmatter.keywords ?? null,
+    related_lures: frontmatter.related_lures ?? null,
     published_at: frontmatter.published_at ?? null,
     created_at: updatedAt,
     updated_at: updatedAt

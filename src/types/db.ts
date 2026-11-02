@@ -47,6 +47,8 @@ export type ColumnPost = {
   meta_description: string | null;
   og_image: string | null;
   keywords: string[] | null;
+  /** コラム末尾に出すルアー名(部分一致)。未設定なら評価の高いルアーを出す */
+  related_lures?: string[] | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;

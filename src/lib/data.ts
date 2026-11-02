@@ -68,6 +68,20 @@ export async function getTopRatedLures(limit = 6) {
   return ((data ?? []) as LureRowWithRelations[]).map(toLure);
 }
 
+/** 名前の一部(例: "ミドルアッパー")ごとに最初に見つかった1本を、指定順に返す。コラムの「紹介したルアー」用 */
+export async function getLuresByNameKeywords(keywords: string[]) {
+  noStore();
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.from("lures").select(LURE_SELECT).order("name", { ascending: true });
+  const lures = ((data ?? []) as LureRowWithRelations[]).map(toLure);
+  const picked: typeof lures = [];
+  for (const keyword of keywords) {
+    const hit = lures.find((lure) => lure.name.includes(keyword) && !picked.some((p) => p.id === lure.id));
+    if (hit) picked.push(hit);
+  }
+  return picked;
+}
+
 export async function getLures(filters?: {
   bachi?: string;
   type?: string;
