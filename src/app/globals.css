@@ -153,6 +153,17 @@ a {
   margin-bottom: 0;
 }
 
+.markdown-content a {
+  color: var(--water-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.markdown-content a:hover {
+  color: var(--teal);
+}
+
 .markdown-content ul,
 .markdown-content ol {
   margin: 0.9rem 0;
