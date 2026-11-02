@@ -22,7 +22,7 @@ export const metadata = createMetadata({
 export default async function HomePage() {
   const [stats, ranking, columns] = await Promise.all([
     getTopStats(),
-    getRecommendedLures(5),
+    getRecommendedLures(2),
     getLatestColumns(3)
   ]);
 
@@ -63,7 +63,7 @@ export default async function HomePage() {
           </Link>
         </div>
         <p className="mb-4 text-[12px] leading-relaxed text-[var(--muted)]">
-          評価★5のルアーから、読み込むたびに違う5本を出しています。管理人の実釣インプレつきです。
+          評価★5のルアーから、読み込むたびに違う2本を出しています。管理人の実釣インプレつきです。
         </p>
         <div className="space-y-3">
           {ranking.map((lure) => {
