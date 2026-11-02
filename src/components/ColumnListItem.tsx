@@ -20,9 +20,9 @@ export function ColumnListItem({ column }: ColumnListItemProps) {
   const publishedDate = column.published_at?.slice(0, 10);
 
   return (
-    <article className="border-b border-[var(--border)] py-7 first:pt-0 last:border-b-0">
+    <article className="border-b border-[var(--border)] py-4 first:pt-0 last:border-b-0">
       <Link href={`/columns/${column.id}`} className="group block">
-        <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--muted)]">
+        <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--muted)]">
           {publishedDate ? (
             <time dateTime={column.published_at ?? undefined} className="tabular-nums">
               {publishedDate}
@@ -31,13 +31,12 @@ export function ColumnListItem({ column }: ColumnListItemProps) {
           <span className="inline-block rounded px-2 py-0.5 text-[10px] badge-bachi">{column.category}</span>
         </div>
         <h2
-          className="text-xl font-medium leading-snug text-[var(--moon)] transition-colors duration-200 group-hover:text-[var(--water-light)] md:text-2xl md:leading-tight"
+          className="text-base font-medium leading-snug text-[var(--moon)] transition-colors duration-200 group-hover:text-[var(--water-light)] md:text-lg"
           style={{ fontFamily: "var(--font-serif-jp), 'Noto Serif JP', serif" }}
         >
           {column.title}
         </h2>
-        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[#bdb4a1] md:text-[15px]">{excerpt}</p>
-        <p className="mt-4 text-sm text-[var(--teal)] transition-transform group-hover:translate-x-1">続きを読む →</p>
+        <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-[#bdb4a1]">{excerpt}</p>
       </Link>
     </article>
   );

@@ -40,7 +40,7 @@ export default async function ColumnsPage({ searchParams }: { searchParams: Prom
           <Link key={c} href={`/columns?category=${encodeURIComponent(c)}`} className={`filter-tab column-filter ${category === c ? "active" : ""}`}>{c}</Link>
         ))}
       </div>
-      <div className="mx-auto max-w-3xl">
+      <div className="max-w-3xl">
         {columns.map((col) => (
           <ColumnListItem key={col.id} column={col} />
         ))}
