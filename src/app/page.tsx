@@ -2,13 +2,13 @@
 import { ColumnCard } from "@/components/ColumnCard";
 import { HomeIntro } from "@/components/HomeIntro";
 import { JsonLd } from "@/components/JsonLd";
-import { LureCard } from "@/components/LureCard";
 import { getLatestColumns, getRecommendedLures, getTopStats } from "@/lib/data";
 import {
   buildHomeFaqJsonLd,
   buildOrganizationJsonLd,
   buildWebSiteJsonLd
 } from "@/lib/json-ld";
+import { excerptComment } from "@/lib/comment-excerpt";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
@@ -56,63 +56,55 @@ export default async function HomePage() {
       <HomeIntro className="order-5 md:order-2" />
 
       <section className="order-2 md:order-3">
-        <h2 className="section-title mb-4">おすすめランキング</h2>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="section-title">おすすめルアー</h2>
+          <Link href="/lures" className="shrink-0 text-sm text-[var(--teal)] underline-offset-2 hover:underline">
+            ルアー一覧へ →
+          </Link>
+        </div>
         <div className="space-y-3">
-          {ranking.map((lure, idx) => (
-            <Link
-              key={lure.id}
-              href={`/lures/${lure.id}`}
-              className="lure-card block rounded px-4 py-4 hover:translate-y-[-2px]"
-            >
-              <div className="flex items-center gap-4">
-                <p
-                  className="w-8 text-center text-2xl"
-                  style={{
-                    fontFamily: "Bebas Neue, sans-serif",
-                    color: idx === 0 ? "#EF9F27" : idx === 1 ? "#aaa" : idx === 2 ? "#cd7c2f" : "var(--moon)"
-                  }}
-                >
-                  {idx + 1}
-                </p>
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded border border-[var(--border)] bg-[var(--water-mid)] p-1">
-                  {lure.image_url ? (
-                    <img
-                      src={lure.image_url}
-                      alt={lure.name}
-                      className="max-h-full max-w-full object-contain"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
-                      <path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#4a9aba" strokeWidth="1.5" />
-                      <circle cx="14" cy="11" r="1.2" fill="#4a9aba" />
-                    </svg>
-                  )}
+          {ranking.map((lure) => {
+            const excerpt = excerptComment(lure.comment, { maxLength: 90 });
+            return (
+              <Link
+                key={lure.id}
+                href={excerpt ? `/lures/${lure.id}#admin-comment` : `/lures/${lure.id}`}
+                className="lure-card block rounded px-4 py-4 hover:translate-y-[-2px]"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded border border-[var(--border)] bg-[var(--water-mid)] p-1">
+                    {lure.image_url ? (
+                      <img
+                        src={lure.image_url}
+                        alt={lure.name}
+                        className="max-h-full max-w-full object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+                        <path d="M3 12C7 5 17 5 21 12C17 19 7 19 3 12Z" stroke="#4a9aba" strokeWidth="1.5" />
+                        <circle cx="14" cy="11" r="1.2" fill="#4a9aba" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="serif-title text-base">{lure.name}</p>
+                    <p className="text-xs text-[var(--muted)]">{lure.maker}</p>
+                  </div>
+                  <p className="text-sm text-[var(--amber)]">{"★".repeat(lure.rating ?? 0)}</p>
                 </div>
-                <div className="flex-1">
-                  <p className="serif-title text-base">{lure.name}</p>
-                  <p className="text-xs text-[var(--muted)]">{lure.maker}</p>
-                </div>
-                <p className="text-sm text-[var(--amber)]">{"★".repeat(lure.rating ?? 0)}</p>
-              </div>
-            </Link>
-          ))}
+                {excerpt ? (
+                  <p className="mt-3 line-clamp-3 border-l-[3px] border-[var(--teal)] bg-[rgba(29,158,117,0.05)] px-3 py-2 text-[12px] leading-[1.75] text-[var(--paper)]">
+                    {excerpt}
+                  </p>
+                ) : null}
+              </Link>
+            );
+          })}
         </div>
       </section>
 
       <section className="order-3 md:order-4">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="section-title">ルアー一覧</h2>
-          <Link href="/lures" className="text-sm text-[var(--teal)]">一覧へ</Link>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {ranking.map((lure) => (
-            <LureCard key={lure.id} lure={lure} showCommentExcerpt />
-          ))}
-        </div>
-      </section>
-
-      <section className="order-4 md:order-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="section-title">管理人コラム</h2>
           <Link href="/columns" className="shrink-0 text-sm text-[var(--teal)] underline-offset-2 hover:underline">
