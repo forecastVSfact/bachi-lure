@@ -36,7 +36,7 @@ export function ColumnListItem({ column }: ColumnListItemProps) {
         >
           {column.title}
         </h2>
-        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[var(--muted)] md:text-[15px]">{excerpt}</p>
+        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[#bdb4a1] md:text-[15px]">{excerpt}</p>
         <p className="mt-4 text-sm text-[var(--teal)] transition-transform group-hover:translate-x-1">続きを読む →</p>
       </Link>
     </article>

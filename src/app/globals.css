@@ -78,6 +78,21 @@ a {
   color: var(--moon);
 }
 
+/* コラム一覧の絞り込み。ルアー一覧のfilter-tabより読みやすくする */
+.filter-tab.column-filter {
+  color: #cfc7b3;
+  border-color: rgba(74, 154, 186, 0.4);
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.filter-tab.column-filter.active {
+  background: rgba(74, 154, 186, 0.28);
+  border-color: var(--water-light);
+  color: #ffffff;
+  font-weight: 500;
+}
+
 .field-dark {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
