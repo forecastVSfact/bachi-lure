@@ -62,6 +62,9 @@ export default async function HomePage() {
             ルアー一覧へ →
           </Link>
         </div>
+        <p className="mb-4 text-[12px] leading-relaxed text-[var(--muted)]">
+          評価★5のルアーから、読み込むたびに違う5本を出しています。管理人の実釣インプレつきです。
+        </p>
         <div className="space-y-3">
           {ranking.map((lure) => {
             const excerpt = excerptComment(lure.comment, { maxLength: 90 });
@@ -102,9 +105,15 @@ export default async function HomePage() {
             );
           })}
         </div>
+        <Link
+          href="/lures"
+          className="mt-4 block rounded border border-[var(--teal)] px-4 py-3 text-center text-sm text-[var(--teal)] hover:bg-[rgba(29,158,117,0.08)]"
+        >
+          ルアー一覧をすべて見る（{stats.lureCount}件）→
+        </Link>
       </section>
 
-      <section className="order-3 md:order-4">
+      <section className="order-3 border-t border-[var(--border)] pt-6 md:order-4 md:pt-10">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="section-title">管理人コラム</h2>
           <Link href="/columns" className="shrink-0 text-sm text-[var(--teal)] underline-offset-2 hover:underline">
