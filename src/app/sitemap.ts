@@ -38,10 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const columnIds = new Set<string>();
   const columnPages: MetadataRoute.Sitemap = [];
 
-  for (const column of [...dbColumns, ...fileColumns]) {
+  // ページ表示(mergeColumns)と同じく、同じIDならmarkdown版を優先する
+  for (const column of [...fileColumns, ...dbColumns]) {
     if (columnIds.has(column.id)) continue;
     columnIds.add(column.id);
-    const lastModified = column.updated_at ?? column.published_at;
+    // 更新日は初回公開日に揃える
+    const lastModified = column.published_at ?? column.updated_at;
     columnPages.push({
       url: `${base}/columns/${column.id}`,
       lastModified: lastModified ? new Date(lastModified) : new Date(),

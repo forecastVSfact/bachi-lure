@@ -79,8 +79,13 @@ export function loadFileColumns(): ColumnPost[] {
     .filter((name) => name.endsWith(".md"))
     .map((name) => {
       const filePath = path.join(COLUMNS_DIR, name);
-      const updatedAt = fs.statSync(filePath).mtime.toISOString();
       const { frontmatter, body } = parseMarkdownFile(fs.readFileSync(filePath, "utf-8"));
+      // 更新日は初回公開日(published_at)に固定する。ファイルのmtimeはデプロイのたびに全コラム同じ時刻になるため使わない。
+      const publishedAt = frontmatter.published_at ? new Date(frontmatter.published_at) : null;
+      const updatedAt =
+        publishedAt && !Number.isNaN(publishedAt.getTime())
+          ? publishedAt.toISOString()
+          : fs.statSync(filePath).mtime.toISOString();
       return toColumnPost(frontmatter, body, updatedAt);
     })
     .sort((a, b) => {
