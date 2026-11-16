@@ -17,9 +17,12 @@ type LureSummaryProps = {
   size?: "card" | "detail";
   /** バチ種別バッジを一覧ページへリンクする */
   linkBachiBadges?: boolean;
+  /** 見出しのレベル。一覧のカードはh3、個別ページ本体だけh1にする（カードがh1だらけにならないように） */
+  headingLevel?: "h1" | "h3";
 };
 
-export function LureSummary({ lure, images, size = "card", linkBachiBadges = false }: LureSummaryProps) {
+export function LureSummary({ lure, images, size = "card", linkBachiBadges = false, headingLevel = "h3" }: LureSummaryProps) {
+  const Heading = headingLevel;
   const bachiTypeSet = new Set(lure.bachi_types);
   const orderedBachiTypes = BACHI_TYPES.filter((type) => bachiTypeSet.has(type));
   const rating = lure.rating ?? 0;
@@ -79,7 +82,7 @@ export function LureSummary({ lure, images, size = "card", linkBachiBadges = fal
         </div>
       ) : null}
 
-      <h1 className="serif-title text-base font-bold">{lure.name}</h1>
+      <Heading className="serif-title text-base font-bold">{lure.name}</Heading>
       <p className="mb-3 text-xs text-[var(--muted)]">{lure.maker}</p>
 
       <div className="grid grid-cols-2 gap-x-3 gap-y-2">

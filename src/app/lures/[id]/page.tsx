@@ -141,7 +141,7 @@ export default async function LureDetailPage({ params }: { params: Promise<{ id:
         <div className="mx-auto w-full max-w-md space-y-4">
           <div className="lure-card relative overflow-hidden p-4">
             <span className="lure-card-accent" />
-            <LureSummary lure={lure} images={images} linkBachiBadges />
+            <LureSummary lure={lure} images={images} linkBachiBadges headingLevel="h1" />
           </div>
           <AffiliateButtons lure={lure} />
         </div>
