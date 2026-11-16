@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Script from "next/script";
 import { Bebas_Neue, Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
+import { BACHI_PAGE_CONFIGS } from "@/lib/bachi-pages";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
@@ -82,6 +83,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="container-main pb-6 pt-0 md:py-8">{children}</main>
         <footer className="mt-12 border-t border-[var(--border)] bg-[#020810] px-4 py-8 text-center text-xs text-[var(--muted)]">
           <p className="logo-text mb-2 text-sm">bachi-lure.com</p>
+          {/* 全ページから種別ページ→各ルアーへ辿れるようにする（クロール経路の確保） */}
+          <nav aria-label="バチの種類別ルアー" className="mb-4 flex flex-wrap justify-center gap-x-4 gap-y-1">
+            {BACHI_PAGE_CONFIGS.map((config) => (
+              <Link key={config.slug} href={`/lures/${config.slug}`} className="hover:text-[var(--teal)]">
+                {config.label}向けルアー
+              </Link>
+            ))}
+            <Link href="/lures" className="hover:text-[var(--teal)]">
+              ルアー一覧
+            </Link>
+            <Link href="/columns" className="hover:text-[var(--teal)]">
+              コラム
+            </Link>
+          </nav>
           <p>© 2025 bachi-lure.com All Rights Reserved.</p>
           <p>当サイトのコンテンツの無断転載・AI学習データへの使用を禁止します。</p>
         </footer>

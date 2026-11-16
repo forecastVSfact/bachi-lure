@@ -15,7 +15,9 @@ import {
 } from "@/lib/constants";
 import type { Lure } from "@/types/db";
 import { buildBreadcrumbJsonLd, buildLureProductJsonLd } from "@/lib/json-ld";
-import { getLureById, getLureImages, getRelatedLures } from "@/lib/data";
+import { getLureById, getLureImages, getLuresByMaker, getRelatedLures } from "@/lib/data";
+import { BACHI_PAGE_CONFIGS } from "@/lib/bachi-pages";
+import { excerptComment } from "@/lib/comment-excerpt";
 import { createMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -27,9 +29,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     : "未設定";
   const depth = formatDepthRange(lure.range_min_cm, lure.range_max_cm);
 
+  // 管理人コメントがあれば冒頭を説明文に使い、ページごとに説明文が重ならないようにする
+  const excerpt = excerptComment(lure.comment, { maxLength: 80, maxSentences: 2 });
+  const specLine = `レンジ${depth}、${bachiTypeLabel}対応。管理人おすすめ度★${lure.rating ?? "-"}。`;
+
   return createMetadata({
     title: `${lure.name}（${lure.maker}）`,
-    description: `${lure.name}のバチ抜けインプレ。レンジ${depth}、${bachiTypeLabel}対応。管理人おすすめ度★${lure.rating ?? "-"}。`,
+    description: excerpt
+      ? `${lure.name}のバチ抜けインプレ。${excerpt} ${specLine}`
+      : `${lure.name}のバチ抜けインプレ。${specLine}`,
     path: `/lures/${lure.id}`,
     imageUrl: lure.image_url
   });
@@ -100,10 +108,15 @@ export default async function LureDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   const lure = await getLureById(id);
   if (!lure) notFound();
-  const [images, related] = await Promise.all([
+  const [images, related, makerLures] = await Promise.all([
     getLureImages(lure.id),
-    getRelatedLures(lure.id, lure.bachi_types, lure.size_mm)
+    getRelatedLures(lure.id, lure.bachi_types, lure.size_mm),
+    getLuresByMaker(lure.id, lure.maker, 3)
   ]);
+  // 関連ルアーと重複しないものだけ、同じメーカーの枠に出す
+  const relatedIds = new Set(related.map((r) => r.id));
+  const sameMaker = makerLures.filter((r) => !relatedIds.has(r.id));
+  const bachiTypePages = BACHI_PAGE_CONFIGS.filter((config) => lure.bachi_types.includes(config.bachiType));
 
   const rating = lure.rating ?? 0;
 
@@ -132,8 +145,6 @@ export default async function LureDetailPage({ params }: { params: Promise<{ id:
           </div>
           <AffiliateButtons lure={lure} />
         </div>
-        <AdminComment lure={lure} />
-        <YoutubeSection lure={lure} />
       </div>
 
       {/* PC: ギャラリー + SPEC レイアウト */}
@@ -198,10 +209,44 @@ export default async function LureDetailPage({ params }: { params: Promise<{ id:
             </div>
           </div>
         </section>
-
-        <AdminComment lure={lure} />
-        <YoutubeSection lure={lure} />
       </div>
+
+      {/* スマホ・PC共通。以前は両レイアウトに二重に出力していた（重複HTML・id重複）ため1か所にまとめた */}
+      <AdminComment lure={lure} />
+      <YoutubeSection lure={lure} />
+
+      <section className="space-y-3">
+        <h2 className="section-title">{lure.name}の特徴</h2>
+        <p className="text-[13px] leading-[1.9] text-[var(--paper)]">
+          {lure.name}は{lure.maker}の{lure.size_mm ? `${lure.size_mm}mm` : ""}
+          {lure.weight_g ? `・${lure.weight_g}g` : ""}の{LURE_TYPE_LABEL[lure.lure_type] ?? lure.lure_type}ルアーです。
+          狙えるレンジは{formatDepthRange(lure.range_min_cm, lure.range_max_cm)}、
+          速度域は{formatSpeedRangeDisplay(lure.speed_range)}、
+          飛距離は{CASTING_DISTANCE_LABEL[lure.casting_distance] ?? lure.casting_distance}。
+          {bachiTypePages.length ? "対応するバチのパターンは" : ""}
+          {bachiTypePages.map((config, index) => (
+            <span key={config.slug}>
+              {index > 0 ? "、" : ""}
+              <Link href={`/lures/${config.slug}`} className="text-[var(--teal)] hover:underline">
+                {config.label}
+              </Link>
+            </span>
+          ))}
+          {bachiTypePages.length ? "です。" : ""}
+          {lure.rating != null ? `管理人の実釣評価は★${lure.rating}です。` : "管理人は未使用のため、評価は付けていません。"}
+        </p>
+        <p className="text-[12px] text-[var(--muted)]">
+          使い分けの考え方は
+          <Link href="/columns" className="mx-1 text-[var(--teal)] hover:underline">
+            コラム
+          </Link>
+          、他のルアーとの比較は
+          <Link href="/lures" className="mx-1 text-[var(--teal)] hover:underline">
+            ルアー一覧
+          </Link>
+          で確認できます。
+        </p>
+      </section>
 
       <section>
         <h2 className="section-title mb-3">関連ルアー</h2>
@@ -211,6 +256,17 @@ export default async function LureDetailPage({ params }: { params: Promise<{ id:
           ))}
         </div>
       </section>
+
+      {sameMaker.length ? (
+        <section>
+          <h2 className="section-title mb-3">{lure.maker}の他のルアー</h2>
+          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {sameMaker.map((r) => (
+              <LureCard key={r.id} lure={r} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <p className="text-[11px] text-[var(--muted)]">※このページにはアフィリエイトリンクを含みます</p>
     </div>

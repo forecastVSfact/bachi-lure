@@ -134,7 +134,7 @@ function sizeDistanceMm(base: number | null, candidate: number | null): number {
   return Math.abs(base - candidate);
 }
 
-/** バチ種別が1つ以上一致するルアー。一致数が多い順→サイズが近い順で最大3件 */
+/** バチ種別が1つ以上一致するルアー。一致数が多い順→サイズが近い順で最大6件 */
 export async function getRelatedLures(lureId: string, bachiTypes: string[], sizeMm: number | null) {
   const supabase = await createSupabaseServerClient();
   if (!bachiTypes.length) return [];
@@ -158,7 +158,22 @@ export async function getRelatedLures(lureId: string, bachiTypes: string[], size
       if (overlapDiff !== 0) return overlapDiff;
       return sizeDistanceMm(sizeMm, a.size_mm) - sizeDistanceMm(sizeMm, b.size_mm);
     })
-    .slice(0, 3);
+    .slice(0, 6);
+}
+
+/** 同じメーカーの他のルアー。個別ページ同士の内部リンクを増やすために使う（最大limit件、評価の高い順） */
+export async function getLuresByMaker(lureId: string, maker: string | null | undefined, limit = 3) {
+  if (!maker?.trim()) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("lures")
+    .select(LURE_SELECT)
+    .eq("maker", maker)
+    .neq("id", lureId)
+    .order("rating", { ascending: false, nullsFirst: false })
+    .order("name", { ascending: true })
+    .limit(limit);
+  return ((data ?? []) as LureRowWithRelations[]).map(toLure);
 }
 
 export async function getLatestColumns(limit = 3) {
