@@ -77,6 +77,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/columns" className="text-[var(--muted)] hover:text-[var(--teal)]">
                 コラム
               </Link>
+              <Link href="/calendar" className="text-[var(--muted)] hover:text-[var(--teal)]">
+                カレンダー
+              </Link>
             </nav>
           </div>
         </header>
@@ -95,6 +98,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <Link href="/columns" className="hover:text-[var(--teal)]">
               コラム
+            </Link>
+            <Link href="/calendar" className="hover:text-[var(--teal)]">
+              バチ抜けカレンダー
             </Link>
           </nav>
           <p>© 2025 bachi-lure.com All Rights Reserved.</p>
