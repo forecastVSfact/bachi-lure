@@ -27,6 +27,13 @@ export type CalendarDay = {
   /** 月齢(その日の正午) */
   moonAge: number;
   tide: TideName;
+  /**
+   * 同じ潮名が続くうちの何日目か(大潮・小潮、大潮のあとの中潮)。
+   * 長潮・若潮と、大潮の前の中潮は null
+   */
+  tideDayNo: number | null;
+  /** 大潮の前の中潮(旧暦12・13日、27・28日)なら true */
+  beforeSpring: boolean;
   /** バチ抜けの印(管理人の目安)。印のない日は null */
   bachi: BachiRank | null;
   /** その日に新月・上弦・満月・下弦になるとき */
@@ -108,6 +115,15 @@ export function buildMonth(year: number, month: number): CalendarMonth {
   const phases = listPhases(from, to);
   const newMoons = phases.filter((p) => p.quarter === 0).map((p) => p.time);
 
+  // 旧暦日は「朔を含む日本時間の日」を1日として数える
+  const lunarDayOf = (dn: number): number => {
+    let anchor = newMoons[0];
+    for (const nm of newMoons) {
+      if (jstDayNumber(nm) <= dn) anchor = nm;
+    }
+    return dn - jstDayNumber(anchor) + 1;
+  };
+
   const days: CalendarDay[] = [];
   for (let dn = firstDay; dn < nextFirstDay; dn++) {
     // 日本時間の正午 = UTCの前日21:00 + 12h → dn日のUTC 03:00
@@ -118,13 +134,16 @@ export function buildMonth(year: number, month: number): CalendarMonth {
     for (const nm of newMoons) {
       if (nm.getTime() <= noon.getTime()) latest = nm;
     }
-    // 旧暦日は「朔を含む日本時間の日」を1日として数える。
-    // 朔が正午より後でも、その日が1日(月齢は前の朔から数える)
-    let anchor = latest;
-    for (const nm of newMoons) {
-      if (jstDayNumber(nm) <= dn) anchor = nm;
-    }
-    const lunarDay = dn - jstDayNumber(anchor) + 1;
+    // 朔が正午より後でも、その日が旧暦1日(月齢は前の朔から数える)
+    const lunarDay = lunarDayOf(dn);
+    const tide = tideNameFromLunarDay(lunarDay);
+
+    // 同じ潮名が続く何日目か。続きの日を数え、前の日の潮名で大潮の前後を見分ける
+    let run = 1;
+    while (tideNameFromLunarDay(lunarDayOf(dn - run)) === tide) run++;
+    const prevTide = tideNameFromLunarDay(lunarDayOf(dn - run));
+    const beforeSpring = tide === "中潮" && prevTide !== "大潮";
+    const tideDayNo = tide === "長潮" || tide === "若潮" || beforeSpring ? null : run;
     const moonAge = (noon.getTime() - latest.getTime()) / DAY_MS;
 
     const phaseEvent = phases.find((p) => jstDayNumber(p.time) === dn);
@@ -136,7 +155,9 @@ export function buildMonth(year: number, month: number): CalendarMonth {
       weekday: date.getUTCDay(),
       lunarDay,
       moonAge: Math.round(moonAge * 10) / 10,
-      tide: tideNameFromLunarDay(lunarDay),
+      tide,
+      tideDayNo,
+      beforeSpring,
       bachi: bachiRankFromLunarDay(lunarDay),
       phase: phaseEvent ? PHASE_LABEL[phaseEvent.quarter] : null
     });

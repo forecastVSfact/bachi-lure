@@ -80,11 +80,11 @@ function MonthTable({ month, todayIso }: { month: number; todayIso: string }) {
       <table className="w-full table-fixed border-collapse text-[12px]">
         <thead>
           <tr className="border-b border-[var(--border)] text-[10px] text-[var(--muted)]">
-            <th className="w-[19%] py-1 text-left font-normal">日</th>
-            <th className="w-[13%] py-1 text-left font-normal">潮</th>
-            <th className="w-[26%] py-1 text-left font-normal">満潮</th>
-            <th className="w-[26%] py-1 text-left font-normal">干潮</th>
-            <th className="w-[16%] py-1 text-left font-normal">日の入り</th>
+            <th className="w-[14%] py-1 text-left font-normal">日</th>
+            <th className="w-[24%] py-1 text-left font-normal">潮回り</th>
+            <th className="w-[24%] py-1 text-left font-normal">満潮</th>
+            <th className="w-[24%] py-1 text-left font-normal">干潮</th>
+            <th className="w-[14%] py-1 text-left font-normal">日の入り</th>
           </tr>
         </thead>
         <tbody>
@@ -107,15 +107,18 @@ function MonthTable({ month, todayIso }: { month: number; todayIso: string }) {
                     </span>
                   ) : null}
                 </td>
-                <td className={`py-1 ${TIDE_TEXT[day.tide]}`}>
-                  <div>{day.tide.replace("潮", "")}</div>
-                  {day.bachi ? (
-                    <div
-                      className={`text-[10px] leading-tight ${
-                        day.bachi === "本命" ? "font-bold text-[var(--amber)]" : "text-[var(--amber)]"
-                      }`}
-                    >
-                      {day.bachi}
+                <td className="py-1">
+                  <div className={`text-[12px] ${TIDE_TEXT[day.tide]}`}>{day.tide}</div>
+                  {day.tideDayNo || day.beforeSpring || day.bachi ? (
+                    <div className="text-[10px] leading-tight text-[var(--muted)]">
+                      {day.tideDayNo ? `${day.tideDayNo}日目` : day.beforeSpring ? "大潮前" : ""}
+                      {day.bachi ? (
+                        <span
+                          className={`ml-1 text-[var(--amber)] ${day.bachi === "本命" ? "font-bold" : ""}`}
+                        >
+                          {day.bachi}
+                        </span>
+                      ) : null}
                     </div>
                   ) : null}
                 </td>
@@ -197,9 +200,9 @@ export default function Calendar2027Page() {
           「候補」「本命」は、釣果や実際のバチの発生とは関係なく、次のルールだけで機械的に付けています。
         </p>
         <ul className="mt-2 list-disc space-y-1 pl-5">
-          <li>大潮の最終日から、そのあとの中潮の4日目まで：候補</li>
-          <li>そのうち、中潮の2日目と3日目：本命</li>
-          <li>大潮の前の中潮：印なし</li>
+          <li>大潮の最終日から、大潮のあとの中潮の4日目まで：候補</li>
+          <li>そのうち、大潮のあとの中潮の2日目と3日目：本命</li>
+          <li>大潮の前の中潮(表では「大潮前」)：印なし</li>
         </ul>
         <p className="mt-2 text-[var(--muted)]">
           旧暦の日で言うと、候補は2・3・6日と17・18・21日、本命は4・5日と19・20日です(大潮は29〜2日と14〜17日、そのあとの中潮は3〜6日と18〜21日)。
@@ -231,6 +234,9 @@ export default function Calendar2027Page() {
         </p>
         <p>
           推算値なので、気圧や風、天候による実際の潮位とは異なります。また、{TIDE_STATION}の値なので、釣り場によって満潮・干潮の時刻や潮位は変わります。釣行前に、釣り場に近い地点の潮位表で確認してください。
+        </p>
+        <p>
+          潮回りの「○日目」は、同じ潮名が続く日を数えたものです。大潮の前の中潮は2日間で、日数ではなく「大潮前」と表示しています。
         </p>
         <p>
           日の入りは東京の位置から、月齢・潮回りは新月の時刻から、当サイトで計算しています。潮名の区分は、新聞や釣り雑誌、潮見表によって1〜2日ずれることがあります。
