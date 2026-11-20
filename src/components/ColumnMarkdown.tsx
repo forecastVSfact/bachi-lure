@@ -15,11 +15,17 @@ function parseYouTubeId(url: string): string | null {
   return null;
 }
 
-function YouTubeEmbed({ id }: { id: string }) {
+/** URLの &t=80s / ?t=80 / &start=80 から開始秒数を取り出す。なければ null */
+function parseYouTubeStart(url: string): number | null {
+  const match = url.match(/[?&](?:t|start)=(\d+)s?(?:&|$)/);
+  return match ? Number(match[1]) : null;
+}
+
+function YouTubeEmbed({ id, start }: { id: string; start?: number | null }) {
   return (
     <div className="youtube-embed">
       <iframe
-        src={`https://www.youtube-nocookie.com/embed/${id}`}
+        src={`https://www.youtube-nocookie.com/embed/${id}${start ? `?start=${start}` : ""}`}
         title="YouTube動画"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
@@ -72,12 +78,12 @@ function createMarkdownComponents(sourceId: string): Components {
   p: ({ children }) => {
     const text = paragraphText(children);
     const videoId = parseYouTubeId(text);
-    if (videoId) return <YouTubeEmbed id={videoId} />;
+    if (videoId) return <YouTubeEmbed id={videoId} start={parseYouTubeStart(text)} />;
     return <p>{children}</p>;
   },
   a: ({ href, children }) => {
     const videoId = href ? parseYouTubeId(href) : null;
-    if (videoId) return <YouTubeEmbed id={videoId} />;
+    if (videoId) return <YouTubeEmbed id={videoId} start={href ? parseYouTubeStart(href) : null} />;
     if (href?.startsWith("/")) return <Link href={href}>{children}</Link>;
     const store = href ? affiliateStore(href) : null;
     if (href && store) {
