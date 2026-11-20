@@ -10,13 +10,23 @@ export const revalidate = 3600;
 export const metadata = createMetadata({
   title: "バチ抜けカレンダー｜月齢・潮回り（大潮・中潮・小潮）",
   description:
-    "バチ抜けの釣行計画に使える、月ごとの月齢・潮回り(大潮・中潮・小潮・長潮・若潮)・新月/満月のカレンダー。今月から半年分を一覧できます。",
+    "バチ抜けの釣行計画に使える、月ごとの月齢・潮回り(大潮・中潮・小潮・長潮・若潮)・新月/満月のカレンダー。バチ抜けのシーズンにあたる1〜4月を一覧できます。",
   path: "/calendar",
   keywords: ["バチ抜けカレンダー", "バチ抜け", "潮回り", "大潮", "月齢", "シーバス"]
 });
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
-const MONTHS_TO_SHOW = 6;
+// バチ抜けのシーズン(1〜4月)だけを載せる
+const SEASON_START_MONTH = 1;
+const SEASON_END_MONTH = 4;
+
+/** シーズン中は今月から4月まで、シーズン外は次のシーズン(翌年1〜4月)を返す */
+function seasonMonths(today: { year: number; month: number }) {
+  const inSeason = today.month >= SEASON_START_MONTH && today.month <= SEASON_END_MONTH;
+  const year = today.month > SEASON_END_MONTH ? today.year + 1 : today.year;
+  const startMonth = inSeason ? today.month : SEASON_START_MONTH;
+  return buildMonths(year, startMonth, SEASON_END_MONTH - startMonth + 1);
+}
 
 
 const TIDE_STYLE: Record<TideName, string> = {
@@ -63,7 +73,7 @@ function DayCell({ day, isToday }: { day: CalendarDay; isToday: boolean }) {
 
 export default function CalendarPage() {
   const today = todayJst();
-  const months = buildMonths(today.year, today.month, MONTHS_TO_SHOW);
+  const months = seasonMonths(today);
 
   return (
     <div className="max-w-3xl">
@@ -77,7 +87,7 @@ export default function CalendarPage() {
       />
       <h1 className="serif-title mb-4 text-2xl font-bold md:text-3xl">バチ抜けカレンダー</h1>
       <p className="mb-3 text-[13px] leading-[1.9] text-[var(--paper)]">
-        釣行の計画に使える、月ごとの月齢と潮回りのカレンダーです。今月から半年分を並べています。バチ抜けの条件として語られる「大潮前後」「新月・満月」の日が、ひと目で分かります。
+        釣行の計画に使える、月ごとの月齢と潮回りのカレンダーです。バチ抜けのシーズンにあたる、1月から4月までを並べています。バチ抜けの条件として語られる「大潮前後」「新月・満月」の日が、ひと目で分かります。
       </p>
       <p className="mb-6 text-[13px] leading-[1.9] text-[var(--paper)]">
         ただし、潮回りだけで抜ける日が決まるわけではありません。見極め方は
