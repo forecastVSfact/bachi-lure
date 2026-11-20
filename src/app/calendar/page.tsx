@@ -18,12 +18,6 @@ export const metadata = createMetadata({
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 const MONTHS_TO_SHOW = 6;
 
-const PHASE_ICON: Record<NonNullable<CalendarDay["phase"]>, string> = {
-  新月: "🌑",
-  上弦: "🌓",
-  満月: "🌕",
-  下弦: "🌗"
-};
 
 const TIDE_STYLE: Record<TideName, string> = {
   大潮: "text-[var(--paper)]",
@@ -48,11 +42,15 @@ function DayCell({ day, isToday }: { day: CalendarDay; isToday: boolean }) {
     >
       <div className="flex items-start justify-between leading-none">
         <span className={`text-[12px] ${isToday ? "font-bold text-[var(--amber)]" : ""}`}>{day.day}</span>
-        <span className="text-[11px]" aria-label={day.phase ?? undefined}>
-          {day.phase ? PHASE_ICON[day.phase] : ""}
+        <span
+          className={`text-[9px] ${
+            day.phase === "新月" || day.phase === "満月" ? "text-[var(--paper)]" : "text-[var(--muted)]"
+          }`}
+        >
+          {day.phase ?? ""}
         </span>
       </div>
-      <div className="mt-auto text-[11px] font-semibold leading-tight">{day.tide}</div>
+      <div className={`mt-auto text-[11px] leading-tight ${day.bachi ? "font-semibold" : ""}`}>{day.tide}</div>
       {day.bachi ? (
         <div className={`text-[9px] leading-tight text-[var(--amber)] ${day.bachi === "本命" ? "font-bold" : ""}`}>
           {day.bachi}
@@ -91,7 +89,7 @@ export default function CalendarPage() {
 
       <div className="mb-8 rounded-sm border border-[var(--border)] px-3 py-2 text-[11px] leading-[1.8] text-[var(--muted)]">
         <p>
-          <span>🌑新月 🌓上弦 🌕満月 🌗下弦 ／ 黄色の枠が今日</span>
+          <span>新月・上弦・満月・下弦の日は、日付の右に表示 ／ 黄色の枠が今日</span>
         </p>
         <p className="mt-1">
           <span className="mr-3 rounded-sm bg-[rgba(239,159,39,0.28)] px-1.5 font-bold text-[var(--amber)]">本命</span>

@@ -28,8 +28,8 @@ const PHASE_ICON: Record<NonNullable<CalendarDay["phase"]>, string> = {
 };
 
 const TIDE_TEXT: Record<TideName, string> = {
-  大潮: "text-[var(--paper)] font-semibold",
-  中潮: "text-[var(--paper)] font-semibold",
+  大潮: "text-[var(--paper)]",
+  中潮: "text-[var(--paper)]",
   小潮: "text-[var(--muted)]",
   長潮: "text-[var(--muted)]",
   若潮: "text-[var(--muted)]"
@@ -94,13 +94,20 @@ function MonthTable({ month, todayIso }: { month: number; todayIso: string }) {
                   <span className="text-[13px]">{day.day}</span>
                   <span className="ml-0.5 text-[10px]">{WEEKDAYS[day.weekday]}</span>
                   {day.phase ? (
-                    <span className="ml-0.5 text-[10px]" aria-label={day.phase} title={day.phase}>
+                    <div
+                      className={`text-[10px] leading-tight ${
+                        day.phase === "新月" || day.phase === "満月" ? "text-[var(--paper)]" : "text-[var(--muted)]"
+                      }`}
+                    >
                       {PHASE_ICON[day.phase]}
-                    </span>
+                      {day.phase}
+                    </div>
                   ) : null}
                 </td>
                 <td className="py-1">
-                  <div className={`text-[12px] ${TIDE_TEXT[day.tide]}`}>{day.tide}</div>
+                  <div className={`text-[12px] ${TIDE_TEXT[day.tide]} ${day.bachi ? "font-semibold" : ""}`}>
+                    {day.tide}
+                  </div>
                   {day.tideDayNo || day.beforeSpring || day.bachi ? (
                     <div className="text-[10px] leading-tight text-[var(--muted)]">
                       {day.tideDayNo ? `${day.tideDayNo}日目` : day.beforeSpring ? "大潮前" : ""}
