@@ -27,25 +27,17 @@ const PHASE_ICON: Record<NonNullable<CalendarDay["phase"]>, string> = {
   下弦: "🌗"
 };
 
-const TIDE_STYLE: Record<TideName, string> = {
-  大潮: "bg-[rgba(29,158,117,0.18)]",
-  中潮: "bg-[rgba(29,158,117,0.06)]",
-  小潮: "",
-  長潮: "",
-  若潮: ""
-};
-
 const TIDE_TEXT: Record<TideName, string> = {
-  大潮: "text-[var(--teal-light)] font-semibold",
-  中潮: "text-[var(--paper)]",
+  大潮: "text-[var(--paper)] font-semibold",
+  中潮: "text-[var(--paper)] font-semibold",
   小潮: "text-[var(--muted)]",
   長潮: "text-[var(--muted)]",
   若潮: "text-[var(--muted)]"
 };
 
 const BACHI_ROW: Record<string, string> = {
-  本命: "border-l-4 border-l-[var(--amber)]",
-  候補: "border-l-4 border-l-[rgba(239,159,39,0.35)]",
+  本命: "border-l-4 border-l-[var(--amber)] bg-[rgba(239,159,39,0.28)]",
+  候補: "border-l-4 border-l-[rgba(239,159,39,0.6)] bg-[rgba(239,159,39,0.10)]",
   なし: "border-l-4 border-l-transparent"
 };
 
@@ -94,7 +86,7 @@ function MonthTable({ month, todayIso }: { month: number; todayIso: string }) {
             return (
               <tr
                 key={day.iso}
-                className={`border-b border-[var(--border)] align-top ${TIDE_STYLE[day.tide]} ${
+                className={`border-b border-[var(--border)] align-top ${
                   isToday ? "outline outline-1 -outline-offset-1 outline-[var(--amber)]" : ""
                 } ${BACHI_ROW[day.bachi ?? "なし"]}`}
               >
@@ -114,7 +106,7 @@ function MonthTable({ month, todayIso }: { month: number; todayIso: string }) {
                       {day.tideDayNo ? `${day.tideDayNo}日目` : day.beforeSpring ? "大潮前" : ""}
                       {day.bachi ? (
                         <span
-                          className={`ml-1 text-[var(--amber)] ${day.bachi === "本命" ? "font-bold" : ""}`}
+                          className={`ml-1 text-[11px] text-[var(--amber)] ${day.bachi === "本命" ? "font-bold" : ""}`}
                         >
                           {day.bachi}
                         </span>
@@ -182,14 +174,11 @@ export default function Calendar2027Page() {
 
       <div className="mb-8 rounded-sm border border-[var(--border)] px-3 py-2 text-[11px] leading-[1.8] text-[var(--muted)]">
         <p>
-          <span className="mr-3 text-[var(--teal-light)]">■ 大潮</span>
-          <span className="mr-3 text-[var(--paper)]">■ 中潮</span>
-          <span className="mr-3">■ 小潮・長潮・若潮</span>
           <span>🌑新月 🌓上弦 🌕満月 🌗下弦 ／ 時刻は日本時間 ／ 満潮・干潮の小さい数字は潮位(cm)</span>
         </p>
         <p className="mt-1">
-          <span className="mr-3 font-bold text-[var(--amber)]">本命</span>
-          <span className="mr-3 text-[var(--amber)]">候補</span>
+          <span className="mr-3 rounded-sm bg-[rgba(239,159,39,0.28)] px-1.5 font-bold text-[var(--amber)]">本命</span>
+          <span className="mr-3 rounded-sm bg-[rgba(239,159,39,0.10)] px-1.5 text-[var(--amber)]">候補</span>
           <span>管理人のバチ抜けの目安 ／ 黄色の枠が今日</span>
         </p>
       </div>

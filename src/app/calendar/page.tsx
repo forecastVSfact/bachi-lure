@@ -26,11 +26,16 @@ const PHASE_ICON: Record<NonNullable<CalendarDay["phase"]>, string> = {
 };
 
 const TIDE_STYLE: Record<TideName, string> = {
-  大潮: "bg-[rgba(29,158,117,0.22)] text-[var(--teal-light)]",
-  中潮: "bg-[rgba(29,158,117,0.08)] text-[var(--paper)]",
+  大潮: "text-[var(--paper)]",
+  中潮: "text-[var(--paper)]",
   小潮: "text-[var(--muted)]",
   長潮: "text-[var(--muted)]",
   若潮: "text-[var(--muted)]"
+};
+
+const BACHI_CELL: Record<NonNullable<CalendarDay["bachi"]>, string> = {
+  本命: "bg-[rgba(239,159,39,0.28)]",
+  候補: "bg-[rgba(239,159,39,0.10)]"
 };
 
 function DayCell({ day, isToday }: { day: CalendarDay; isToday: boolean }) {
@@ -38,7 +43,7 @@ function DayCell({ day, isToday }: { day: CalendarDay; isToday: boolean }) {
     <div
       className={`flex min-h-[3.6rem] flex-col rounded-sm border px-1 py-1 text-center ${
         isToday ? "border-[var(--amber)]" : "border-[var(--border)]"
-      } ${TIDE_STYLE[day.tide]}`}
+      } ${TIDE_STYLE[day.tide]} ${day.bachi ? BACHI_CELL[day.bachi] : ""}`}
       title={`${day.iso} 月齢${day.moonAge.toFixed(1)} 旧暦${day.lunarDay}日 ${day.tide}${day.phase ? ` ${day.phase}` : ""}`}
     >
       <div className="flex items-start justify-between leading-none">
@@ -86,14 +91,11 @@ export default function CalendarPage() {
 
       <div className="mb-8 rounded-sm border border-[var(--border)] px-3 py-2 text-[11px] leading-[1.8] text-[var(--muted)]">
         <p>
-          <span className="mr-3 text-[var(--teal-light)]">■ 大潮</span>
-          <span className="mr-3 text-[var(--paper)]">■ 中潮</span>
-          <span className="mr-3">■ 小潮・長潮・若潮</span>
           <span>🌑新月 🌓上弦 🌕満月 🌗下弦 ／ 黄色の枠が今日</span>
         </p>
         <p className="mt-1">
-          <span className="mr-3 font-bold text-[var(--amber)]">本命</span>
-          <span className="mr-3 text-[var(--amber)]">候補</span>
+          <span className="mr-3 rounded-sm bg-[rgba(239,159,39,0.28)] px-1.5 font-bold text-[var(--amber)]">本命</span>
+          <span className="mr-3 rounded-sm bg-[rgba(239,159,39,0.10)] px-1.5 text-[var(--amber)]">候補</span>
           <span>管理人のバチ抜けの目安(大潮の最終日から中潮4日目までが候補、中潮2・3日目が本命)</span>
         </p>
       </div>
