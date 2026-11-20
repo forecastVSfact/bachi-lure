@@ -24,7 +24,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/lures`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     ...bachiTypePages,
     { url: `${base}/columns`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${base}/calendar`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 }
+    { url: `${base}/calendar`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/calendar/2027`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 }
   ];
 
   const lurePages = (lures ?? []).map((l) => ({

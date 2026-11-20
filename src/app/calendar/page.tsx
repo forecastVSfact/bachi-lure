@@ -48,6 +48,11 @@ function DayCell({ day, isToday }: { day: CalendarDay; isToday: boolean }) {
         </span>
       </div>
       <div className="mt-auto text-[11px] font-semibold leading-tight">{day.tide}</div>
+      {day.bachi ? (
+        <div className={`text-[9px] leading-tight text-[var(--amber)] ${day.bachi === "本命" ? "font-bold" : ""}`}>
+          {day.bachi}
+        </div>
+      ) : null}
       <div className="text-[9px] leading-tight text-[var(--muted)]">月齢{day.moonAge.toFixed(1)}</div>
     </div>
   );
@@ -86,6 +91,11 @@ export default function CalendarPage() {
           <span className="mr-3">■ 小潮・長潮・若潮</span>
           <span>🌑新月 🌓上弦 🌕満月 🌗下弦 ／ 黄色の枠が今日</span>
         </p>
+        <p className="mt-1">
+          <span className="mr-3 font-bold text-[var(--amber)]">本命</span>
+          <span className="mr-3 text-[var(--amber)]">候補</span>
+          <span>管理人のバチ抜けの目安(大潮の最終日から中潮4日目までが候補、中潮2・3日目が本命)</span>
+        </p>
       </div>
 
       <div className="space-y-10">
@@ -120,7 +130,14 @@ export default function CalendarPage() {
           月齢は、新月の時刻から、その日の正午(日本時間)までの経過日数です。潮回りは、旧暦の日にもとづく目安の区分(大潮は旧暦の29〜2日と14〜17日ごろ、小潮は7〜9日と22〜24日ごろなど)で、海上保安庁が紹介している区分に従っています。
         </p>
         <p>
-          潮名の区分は、新聞や釣り雑誌、潮見表によって1〜2日ずれることがあります。満潮・干潮の時刻や潮位はこのページには載せていないので、釣行前に、気象庁や海上保安庁の潮位表などで釣り場の時刻を確認してください。
+          「候補」「本命」の印は、釣果や実際のバチの発生とは関係なく、ルールだけで機械的に付けています。大潮の最終日から、そのあとの中潮の4日目までが候補、そのうち中潮の2日目と3日目が本命です。大潮の前の中潮には付けていません。旧暦の日では、候補が2・3・6日と17・18・21日、本命が4・5日と19・20日です。
+        </p>
+        <p>
+          潮名の区分は、新聞や釣り雑誌、潮見表によって1〜2日ずれることがあります。このページには満潮・干潮の時刻や潮位は載せていません。2027年の1〜3月分は
+          <Link href="/calendar/2027" className="mx-1 text-[var(--teal)] hover:underline">
+            2027年バチ抜けカレンダー
+          </Link>
+          に東京の満潮・干潮と日の入りを載せています。釣行前には、気象庁や海上保安庁の潮位表などで、釣り場の時刻も確認してください。
         </p>
       </section>
     </div>

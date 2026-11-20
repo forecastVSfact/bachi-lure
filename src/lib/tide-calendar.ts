@@ -13,6 +13,9 @@ import { SearchMoonQuarter } from "astronomy-engine";
 
 export type TideName = "大潮" | "中潮" | "小潮" | "長潮" | "若潮";
 
+/** 管理人の目安によるバチ抜けの印 */
+export type BachiRank = "本命" | "候補";
+
 export type CalendarDay = {
   /** 日付(日本時間) YYYY-MM-DD */
   iso: string;
@@ -24,6 +27,8 @@ export type CalendarDay = {
   /** 月齢(その日の正午) */
   moonAge: number;
   tide: TideName;
+  /** バチ抜けの印(管理人の目安)。印のない日は null */
+  bachi: BachiRank | null;
   /** その日に新月・上弦・満月・下弦になるとき */
   phase: "新月" | "上弦" | "満月" | "下弦" | null;
 };
@@ -55,6 +60,20 @@ export function tideNameFromLunarDay(lunarDay: number): TideName {
   if (lunarDay === 10 || lunarDay === 25) return "長潮";
   if (lunarDay === 11 || lunarDay === 26) return "若潮";
   return "中潮"; // 3〜6, 12・13, 18〜21, 27・28
+}
+
+/**
+ * バチ抜けの印(管理人の目安)。大潮の最終日から、その後の中潮4日目までを「候補」、
+ * 中潮2日目と3日目を「本命」とする。大潮の前の中潮(旧暦12・13・27・28日)には印を付けない。
+ *
+ * 旧暦日で見ると、大潮の最終日は2日・17日、そのあとの中潮は3〜6日・18〜21日。
+ *   候補: 2・3・6日 / 17・18・21日   本命: 4・5日 / 19・20日
+ */
+export function bachiRankFromLunarDay(lunarDay: number): BachiRank | null {
+  if (lunarDay === 4 || lunarDay === 5 || lunarDay === 19 || lunarDay === 20) return "本命";
+  if (lunarDay === 2 || lunarDay === 3 || lunarDay === 6) return "候補";
+  if (lunarDay === 17 || lunarDay === 18 || lunarDay === 21) return "候補";
+  return null;
 }
 
 /** quarter: 0=新月, 1=上弦, 2=満月, 3=下弦 */
@@ -118,6 +137,7 @@ export function buildMonth(year: number, month: number): CalendarMonth {
       lunarDay,
       moonAge: Math.round(moonAge * 10) / 10,
       tide: tideNameFromLunarDay(lunarDay),
+      bachi: bachiRankFromLunarDay(lunarDay),
       phase: phaseEvent ? PHASE_LABEL[phaseEvent.quarter] : null
     });
   }

@@ -53,6 +53,17 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <Link
+        href="/calendar/2027"
+        className="order-1 flex items-center justify-between gap-3 rounded border border-[var(--teal)] px-4 py-3 text-sm text-[var(--teal)] hover:bg-[rgba(29,158,117,0.08)]"
+      >
+        <span>
+          2027年バチ抜けカレンダー
+          <span className="ml-2 text-[11px] text-[var(--muted)]">東京の潮見表（満潮・干潮・大潮）</span>
+        </span>
+        <span aria-hidden>→</span>
+      </Link>
+
       <HomeIntro className="order-5 md:order-2" />
 
       <section className="order-2 md:order-3">
