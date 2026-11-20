@@ -200,12 +200,6 @@ export default function Calendar2027Page() {
           <li>そのうち、大潮のあとの中潮の2日目と3日目：本命</li>
           <li>大潮の前の中潮(表では「大潮前」)：印なし</li>
         </ul>
-        <p className="mt-2 text-[var(--muted)]">
-          旧暦の日で言うと、候補は2・3・6日と17・18・21日、本命は4・5日と19・20日です(大潮は29〜2日と14〜17日、そのあとの中潮は3〜6日と18〜21日)。
-        </p>
-        <p className="mt-1 text-[var(--muted)]">
-          潮回りだけで抜ける日が決まるわけではありません。水温や風、雨なども合わせて見てください。
-        </p>
       </div>
 
       <div className="space-y-10">
