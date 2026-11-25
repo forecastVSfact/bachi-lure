@@ -7,14 +7,6 @@ import { buildMonths, todayJst, type CalendarDay, type TideName } from "@/lib/ti
 // 「今日」の印と、表示する月が古くならないよう、1時間ごとに作り直す
 export const revalidate = 3600;
 
-export const metadata = createMetadata({
-  title: "バチ抜けカレンダー｜月齢・潮回り（大潮・中潮・小潮）",
-  description:
-    "バチ抜けの釣行計画に使える、月ごとの月齢・潮回り(大潮・中潮・小潮・長潮・若潮)・新月/満月のカレンダー。バチ抜けのシーズンにあたる1〜4月を一覧できます。",
-  path: "/calendar",
-  keywords: ["バチ抜けカレンダー", "バチ抜け", "潮回り", "大潮", "月齢", "シーバス"]
-});
-
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 // バチ抜けのシーズン(1〜4月)だけを載せる
 const SEASON_START_MONTH = 1;
@@ -28,6 +20,17 @@ function seasonMonths(today: { year: number; month: number }) {
   return buildMonths(year, startMonth, SEASON_END_MONTH - startMonth + 1);
 }
 
+
+/** 表示しているシーズンの年(11月なら翌年)を、タイトルに入れる */
+export function generateMetadata() {
+  const year = seasonMonths(todayJst())[0].year;
+  return createMetadata({
+    title: `${year}年バチ抜けカレンダー｜月齢・潮回り（大潮・中潮・小潮）`,
+    description: `${year}年のバチ抜けシーズン(1〜4月)の月齢・潮回り(大潮・中潮・小潮・長潮・若潮)・新月/満月を月ごとに一覧できる、バチ抜けの釣行計画用カレンダー。`,
+    path: "/calendar",
+    keywords: ["バチ抜けカレンダー", `バチ抜けカレンダー ${year}`, "バチ抜け", "潮回り", "大潮", "月齢", "シーバス"]
+  });
+}
 
 const TIDE_STYLE: Record<TideName, string> = {
   大潮: "text-[var(--paper)]",
@@ -85,7 +88,7 @@ export default function CalendarPage() {
           ])
         ]}
       />
-      <h1 className="serif-title mb-4 text-2xl font-bold md:text-3xl">バチ抜けカレンダー</h1>
+      <h1 className="serif-title mb-4 text-2xl font-bold md:text-3xl">{months[0].year}年バチ抜けカレンダー</h1>
       <p className="mb-3 text-[13px] leading-[1.9] text-[var(--paper)]">
         釣行の計画に使える、月ごとの月齢と潮回りのカレンダーです。バチ抜けのシーズンにあたる、1月から4月までを並べています。バチ抜けの条件として語られる「大潮前後」「新月・満月」の日が、ひと目で分かります。
       </p>
